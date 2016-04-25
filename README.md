@@ -20,3 +20,8 @@
 - create a calender event which triggers the above script
 - modify the event accordingly, repeat daily
 - and make sure your Mac is on during that time
+
+# file description
+- autoamex.py allows you to automatically add Amex offers in all of your accounts. Each card under a seperate account. Need "config.csv" to load up your login information
+- autoamexalloffers.py allows you to automatically retrieve all available offer under your accounts. Each card under a seperate account. Need "config.csv" to load up your login information (currently very lengthy output. this will be further optizimed in furture version)
+- autoamexbalance.py allows you to retrieve your payment due, current balance and pending transaction totals. Each card under a seperate account. Need "major.csv" to load up your login information. "major" means all of your major accounts, excluding autorized user logins please
