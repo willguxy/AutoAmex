@@ -29,7 +29,7 @@ def loadConfig(filename):
 	return username, password
 
 
-def loginTest(username, password, outputlog = True):
+def getBalance(username, password, outputlog = True):
 
 	# re-route output
 	orig_stdout = sys.stdout
@@ -37,12 +37,13 @@ def loginTest(username, password, outputlog = True):
 	if outputlog:
 		# use current time as log file
 		logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
-		logfilename = logfilename.replace(':', '_') + ".log"
+		logfilename = "balance " + logfilename.replace(':', '_') + ".log"
 		logfile = open(logfilename, 'w+')
 		sys.stdout = logfile
 
-	# use phantom JS
+	# use phantom JS / Firefox
 	driver = webdriver.PhantomJS()
+	# driver = webdriver.Firefox()
 
 	# some parameters
 	emailFieldID = "lilo_userName"
@@ -102,51 +103,53 @@ def loginTest(username, password, outputlog = True):
 		# just in case the feedback banner appears
 		try:
 			driver.find_element_by_class_name("srCloseBtn").click()
+			time.sleep(2)
 		except:
 			pass
-		time.sleep(2)
 
-		# click on view more if available
+		balance = ''
 		try:
-			driver.find_element_by_class_name(viewMoreBtn).click()
+			balance = driver.find_element_by_id("ah-outstanding-balance").text.encode('utf-8')
 		except:
-			pass
-		time.sleep(2)
-
-		# click on offers
-		# store offer names
-		tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name")
-		tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
-		tmpnames = filter(None, tmpnames)
-		print "Available offers are:", ', '.join(tmpnames)
-		offernames = offernames + tmpnames
-
-		# offers = [] if nothing found
-		# new version + old version		
-		offers = driver.find_elements_by_class_name("ah-card-offer-add-to-card") + driver.find_elements_by_class_name("ah-Add-to-card")
-		offersum += len(offers)
-		print "Total number of offers is:", len(offers)
-		print "Adding offers:",
-
-		i = 1
-		for offer in offers:
-			print i,
-			i += 1
 			try:
-				while True:
-					offer.click()
-					time.sleep(1.5)
+				balance = driver.find_element_by_id("ah-outstanding-balance-value").text.encode('utf-8')
 			except:
-				print "+",
-				continue
+				pass
+
+		due = ''
+		try:
+			due = driver.find_element_by_id("ah-whole").text.encode('utf-8') + driver.find_element_by_id("ah-decimal").text.encode('utf-8')
+		except:
+			try:
+				due = driver.find_element_by_class_name("ah-whole").text.encode('utf-8') + driver.find_element_by_class_name("ah-decimal").text.encode('utf-8')
+			except:
+				pass
+
+		pending = ''
+		try:
+			driver.find_element_by_id("ah-pending-charges").click()
+			time.sleep(2)
+			pending = driver.find_element_by_id("ah-total-pending-amount").text.encode('utf-8')
+		except:
+			try:
+				driver.find_element_by_id("ah-pending-transactions").click()
+			except:
+				pass
+
 		print ""
+		print "Total due:", due
+		print "Total outstanding balance:", balance
+		if pending == '':
+			print "No pending transactions..."
+		else:
+			print "Total pending balance:", pending
 
 		# logout
 		WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
 		time.sleep(2)
 
 		eachendtime = time.time()
-		# print "You have logged out..."
+		print ""
 		print "Time used: %0.2f seconds" % (eachendtime - eachbegintime)
 		print "--------------------------------------------------------------"
 
@@ -157,8 +160,6 @@ def loginTest(username, password, outputlog = True):
 	print "--------------------------------------------------------------"
 	print "** Summary **"
 	print "Total time used: %0.2f seconds" % (endtime - begintime)
-	print "Total number of added offers:", offersum
-	print "All offer names:", ', '.join(offernames)
 	print "--------------------------------------------------------------"
 
 	# close log file
@@ -171,8 +172,8 @@ def loginTest(username, password, outputlog = True):
 
 def main():
 
-	username, password = loadConfig("config.csv")
-	loginTest(username, password)
+	username, password = loadConfig("major.csv")
+	getBalance(username, password, outputlog = True)
 
 if __name__ == '__main__':
 	main()

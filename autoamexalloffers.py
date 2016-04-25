@@ -29,7 +29,7 @@ def loadConfig(filename):
 	return username, password
 
 
-def loginTest(username, password, outputlog = True):
+def getAddedOffers(username, password, outputlog = True):
 
 	# re-route output
 	orig_stdout = sys.stdout
@@ -37,12 +37,14 @@ def loginTest(username, password, outputlog = True):
 	if outputlog:
 		# use current time as log file
 		logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
-		logfilename = logfilename.replace(':', '_') + ".log"
+		logfilename = "offers " + logfilename.replace(':', '_') + ".log"
 		logfile = open(logfilename, 'w+')
 		sys.stdout = logfile
 
-	# use phantom JS
-	driver = webdriver.PhantomJS()
+	# use phantom JS / Firefox
+	# driver = webdriver.PhantomJS()
+	driver = webdriver.Firefox()
+	driver.maximize_window()
 
 	# some parameters
 	emailFieldID = "lilo_userName"
@@ -98,48 +100,57 @@ def loginTest(username, password, outputlog = True):
 		# 	time.sleep(1)
 		# 	print "->",
 		# print "Page has fully loaded..."
+		print ""
 
 		# just in case the feedback banner appears
 		try:
 			driver.find_element_by_class_name("srCloseBtn").click()
+			time.sleep(2)
 		except:
 			pass
-		time.sleep(2)
 
-		# click on view more if available
-		try:
-			driver.find_element_by_class_name(viewMoreBtn).click()
-		except:
-			pass
-		time.sleep(2)
-
-		# click on offers
-		# store offer names
-		tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name")
-		tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
-		tmpnames = filter(None, tmpnames)
-		print "Available offers are:", ', '.join(tmpnames)
-		offernames = offernames + tmpnames
-
-		# offers = [] if nothing found
-		# new version + old version		
-		offers = driver.find_elements_by_class_name("ah-card-offer-add-to-card") + driver.find_elements_by_class_name("ah-Add-to-card")
-		offersum += len(offers)
-		print "Total number of offers is:", len(offers)
-		print "Adding offers:",
-
-		i = 1
-		for offer in offers:
-			print i,
-			i += 1
+		# click on Added to Card
+		flag = True
+		while flag:
 			try:
-				while True:
-					offer.click()
-					time.sleep(1.5)
+				driver.find_element_by_class_name("ah-addedCard").click()
+				time.sleep(2)
+				flag = False
 			except:
-				print "+",
+				driver.execute_script("window.scrollBy(0, -50);")
+				time.sleep(2)
 				continue
-		print ""
+		
+		# old version + new version
+		infos = driver.find_elements_by_class_name("ah-added-card-offer-info") + \
+			driver.find_elements_by_class_name("ah-offer-info")
+		dates = driver.find_elements_by_class_name("ah-added-card-offer-expiration-date") + \
+			driver.find_elements_by_class_name("ah-card-offer-expiration-date")
+		icons = driver.find_elements_by_class_name("ah-card-offer-icon")
+
+		offerinfos = [info.text.encode('utf-8') for info in infos]
+		offerdates = [date.text.encode('utf-8') for date in dates]
+
+		# new version dosen't have offer type
+		types = []
+		offertypes = []
+		if len(icons) != 0:
+			types = [driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) \
+				{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', icon)['class'].encode('utf-8') for icon in icons]
+			offertypes = [type[27:-5] for type in types]
+
+		# print out all offers including (type), info and expiration date
+		i = 1
+		if len(offerinfos) == len(offerdates):
+
+			for i in range(len(offerinfos)):
+
+				if len(offertypes) == 0:
+					print i, offerinfos[i], offerdates[i]
+				else:
+					print i, offertypes[i], offerinfos[i], offerdates[i]
+				print ""
+				i += 1
 
 		# logout
 		WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
@@ -157,8 +168,6 @@ def loginTest(username, password, outputlog = True):
 	print "--------------------------------------------------------------"
 	print "** Summary **"
 	print "Total time used: %0.2f seconds" % (endtime - begintime)
-	print "Total number of added offers:", offersum
-	print "All offer names:", ', '.join(offernames)
 	print "--------------------------------------------------------------"
 
 	# close log file
@@ -169,10 +178,11 @@ def loginTest(username, password, outputlog = True):
 	# close browser
 	driver.quit()
 
+
 def main():
 
 	username, password = loadConfig("config.csv")
-	loginTest(username, password)
+	getAddedOffers(username, password, outputlog = True)
 
 if __name__ == '__main__':
 	main()
