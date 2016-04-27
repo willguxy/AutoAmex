@@ -6,7 +6,7 @@
 # Disclaimer
 - your private data is NOT secured if you just put it in a csv file
 - and this script is exclusive for automation use of amex offers
-- educational usage only, any other use is prehibited
+- educational usage only, any other use is prohibited
 - your private login information can be jeopardized
 - the author of this script will not be responsible for such losses
 
