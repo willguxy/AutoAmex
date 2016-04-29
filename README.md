@@ -25,3 +25,15 @@
 - autoamex.py allows you to automatically add Amex offers in all of your accounts. Each card under a seperate account. Need "config.csv" to load up your login information
 - autoamexalloffers.py allows you to automatically retrieve all available offer under your accounts. Each card under a seperate account. Need "config.csv" to load up your login information (currently very lengthy output. this will be further optizimed in furture version)
 - autoamexbalance.py allows you to retrieve your payment due, current balance and pending transaction totals. Each card under a seperate account. Need "major.csv" to load up your login information. "major" means all of your major accounts, excluding autorized user logins please
+
+# step-by-step installation tutorial on Mac OS
+- Download and install Anaconda here: https://www.continuum.io/downloads (newer version of Mac OS has built-in python, but may not be the lastest version)
+- Make sure the bin folder of anaconda is under your $PATH environment variable. if you run "echo $PATH" in your terminal, you should see "/Users/yourname/anaconda/bin" in your $PATH.
+- update your conda by running "conda update conda" and "conda update anaconda"
+- I would recommend using homebrew to manage your packages on Mac: http://brew.sh/ (just copy and paste that one line of Ruby code in your terminal)
+- by default, homebrew stores executables under /usr/local/bin
+- update homebrew by "brew update" and then "brew upgrade"
+- (optional) use homebrew to install phantom JS. just run "brew install phantomjs"
+- to install selenium, type in the terminal "pip install selenium". some flags can be added, such as -U if you would like to update, or --no-cache, which means not to store caches
+- now you are good to go. Make sure the enviroment variable is well set, so all packages can be found without hassle. If you see some error when running the code like "can't find XYZ module", most likely you need to modify the $PATH variable
+- I would run it in the terminal directly. For debug purpose, you can use Sublime to edit the code. PyCharm seems to use its own PATH be default, so you would have to tweak that around to make PyCharm work
