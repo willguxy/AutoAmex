@@ -37,7 +37,7 @@ def getAddedOffers(username, password, outputlog = True):
 	if outputlog:
 		# use current time as log file
 		logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
-		logfilename = "offers " + logfilename.replace(':', '_') + ".log"
+		logfilename = "offers " + logfilename.replace(':', '_') + ".csv"
 		logfile = open(logfilename, 'w+')
 		sys.stdout = logfile
 
@@ -63,16 +63,19 @@ def getAddedOffers(username, password, outputlog = True):
 		return
 
 	offernames = []
-	offersum = 0
-	begintime  = time.time()
+	# offersum = 0
+	# begintime  = time.time()
+
+	allinfos = []
+	masterinfo = []
 
 	# loop through all username/password combinations
 	for idx in range(len(username)):
 
 		eachbegintime = time.time()
 
-		print "--------------------------------------------------------------"
-		print "#", idx+1, "ID:", username[idx]
+		# print "--------------------------------------------------------------"
+		# print "#", idx+1, "ID:", username[idx]
 		# just in case network connection is broken 
 		try:
 			driver.get("https://online.americanexpress.com/myca/logon/us/action/LogonHandler?request_type=LogonHandler&Face=en_US&inav=iNavLnkLog")
@@ -100,7 +103,7 @@ def getAddedOffers(username, password, outputlog = True):
 		# 	time.sleep(1)
 		# 	print "->",
 		# print "Page has fully loaded..."
-		print ""
+		# print ""
 
 		# just in case the feedback banner appears
 		try:
@@ -130,6 +133,8 @@ def getAddedOffers(username, password, outputlog = True):
 
 		offerinfos = [info.text.encode('utf-8') for info in infos]
 		offerdates = [date.text.encode('utf-8') for date in dates]
+		allinfos.append([offerinfos[i].replace('\n','+')+'+'+offerdates[i] for i in range(len(offerinfos))])
+		masterinfo = sorted(set(masterinfo+[offerinfos[i].replace('\n','+')+'+'+offerdates[i] for i in range(len(offerinfos))]))
 
 		# new version dosen't have offer type
 		types = []
@@ -140,35 +145,53 @@ def getAddedOffers(username, password, outputlog = True):
 			offertypes = [type[27:-5] for type in types]
 
 		# print out all offers including (type), info and expiration date
-		i = 1
-		if len(offerinfos) == len(offerdates):
+		# i = 1
+		# if len(offerinfos) == len(offerdates):
 
-			for i in range(len(offerinfos)):
+		# 	for i in range(len(offerinfos)):
 
-				if len(offertypes) == 0:
-					print i, offerinfos[i], offerdates[i]
-				else:
-					print i, offertypes[i], offerinfos[i], offerdates[i]
-				print ""
-				i += 1
+		# 		if len(offertypes) == 0:
+		# 			print i, offerinfos[i], offerdates[i]
+		# 		else:
+		# 			print i, offertypes[i], offerinfos[i], offerdates[i]
+		# 		print ""
+		# 		i += 1
 
 		# logout
-		WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
+		try:
+			WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
+		except:
+			pass
 		time.sleep(2)
 
-		eachendtime = time.time()
+		# eachendtime = time.time()
 		# print "You have logged out..."
-		print "Time used: %0.2f seconds" % (eachendtime - eachbegintime)
-		print "--------------------------------------------------------------"
+		# print "Time used: %0.2f seconds" % (eachendtime - eachbegintime)
+		# print "--------------------------------------------------------------"
 
 	
-	offernames = list(set(offernames))
-	endtime = time.time()
+	# offernames = list(set(offernames))
+	# endtime = time.time()
 	# print summary
-	print "--------------------------------------------------------------"
-	print "** Summary **"
-	print "Total time used: %0.2f seconds" % (endtime - begintime)
-	print "--------------------------------------------------------------"
+	# print "--------------------------------------------------------------"
+	# print "** Summary **"
+	# print "Total time used: %0.2f seconds" % (endtime - begintime)
+	# print "--------------------------------------------------------------"
+
+	for i in range(3):
+		for info in masterinfo:
+			sys.stdout.write(','+info.split('+')[i].replace(',',' and'))
+		sys.stdout.write('\n')
+
+	for i in range(len(username)):
+		sys.stdout.write(username[i])
+		for info in masterinfo:
+			if info in allinfos[i]:
+				sys.stdout.write(','+'+')
+			else:
+				sys.stdout.write(',')
+		sys.stdout.write('\n')
+
 
 	# close log file
 	if outputlog:
