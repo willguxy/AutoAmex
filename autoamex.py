@@ -42,7 +42,9 @@ def loginTest(username, password, outputlog = True):
 		sys.stdout = logfile
 
 	# use phantom JS
-	driver = webdriver.PhantomJS()
+	# driver = webdriver.PhantomJS()
+	driver = webdriver.Firefox()
+	driver.maximize_window()
 
 	# some parameters
 	emailFieldID = "lilo_userName"
@@ -115,14 +117,14 @@ def loginTest(username, password, outputlog = True):
 
 		# click on offers
 		# store offer names
-		tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name")
+		tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + driver.find_elements_by_class_name("ah-offer-name")
 		tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
 		tmpnames = filter(None, tmpnames)
 		print "Available offers are:", ', '.join(tmpnames)
 		offernames = offernames + tmpnames
 
 		# offers = [] if nothing found
-		# new version + old version		
+		# new version + old version
 		offers = driver.find_elements_by_class_name("ah-card-offer-add-to-card") + driver.find_elements_by_class_name("ah-Add-to-card")
 		offersum += len(offers)
 		print "Total number of offers is:", len(offers)
@@ -132,17 +134,28 @@ def loginTest(username, password, outputlog = True):
 		for offer in offers:
 			print i,
 			i += 1
+			trials = 0 # just in case the button freezes and the program keeps clicking it
 			try:
 				while True:
+					trials += 1
 					offer.click()
 					time.sleep(1.5)
+					if trials >= 5:
+						break
 			except:
 				print "+",
 				continue
 		print ""
 
+		time.sleep(2)
+
 		# logout
-		WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
+		try:
+			WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
+		except:
+			# driver.quit()
+			pass # pass would be fine, since the launch of the url is the log-in page no matter what
+
 		time.sleep(2)
 
 		eachendtime = time.time()
@@ -170,9 +183,8 @@ def loginTest(username, password, outputlog = True):
 	driver.quit()
 
 def main():
-
 	username, password = loadConfig("config.csv")
-	loginTest(username, password)
+	loginTest(username, password, outputlog = True)
 
 if __name__ == '__main__':
 	main()
