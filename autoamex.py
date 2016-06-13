@@ -42,8 +42,8 @@ def loginTest(username, password, outputlog = True):
 		sys.stdout = logfile
 
 	# use phantom JS
-	# driver = webdriver.PhantomJS()
-	driver = webdriver.Firefox()
+	driver = webdriver.PhantomJS()
+	# driver = webdriver.Firefox()
 	driver.maximize_window()
 
 	# some parameters
@@ -106,11 +106,25 @@ def loginTest(username, password, outputlog = True):
 			driver.find_element_by_class_name("srCloseBtn").click()
 		except:
 			pass
-		time.sleep(2)
-
-		# click on view more if available
+		time.sleep(1)
 		try:
-			driver.find_element_by_class_name(viewMoreBtn).click()
+			driver.find_element_by_class_name("fsrCloseBtn").click()
+		except:
+			pass
+		time.sleep(1)
+
+		# # click on view more if available
+		# try:
+		# 	driver.find_element_by_class_name(viewMoreBtn).click()
+		# except:
+		# 	pass
+		# time.sleep(1)
+
+		#scroll down
+		driver.execute_script("window.scrollBy(0, 1250);")
+
+		try:
+			driver.find_element_by_xpath("//*[contains(text(), 'View More')]").click()
 		except:
 			pass
 		time.sleep(2)
@@ -130,24 +144,42 @@ def loginTest(username, password, outputlog = True):
 		print "Total number of offers is:", len(offers)
 		print "Adding offers:",
 
-		i = 1
-		for offer in offers:
-			print i,
-			i += 1
-			trials = 0 # just in case the button freezes and the program keeps clicking it
-			try:
-				while True:
-					trials += 1
-					offer.click()
-					time.sleep(1.5)
-					if trials >= 5:
-						break
-			except:
-				print "+",
-				continue
-		print ""
+		#######################################
+		# i = 1
+		# for offer in offers:
+		# 	print i,
+		# 	i += 1
+		# 	trials = 0 # just in case the button freezes and the program keeps clicking it
+		# 	try:
+		# 		while True:
+		# 			trials += 1
+		# 			offer.click()
+		# 			time.sleep(1.5)
+		# 			if trials >= 5:
+		# 				break
+		# 	except:
+		# 		print "+",
+		# 		continue
+		# print ""
 
-		time.sleep(2)
+		# time.sleep(2)
+		#######################################
+
+		t = 0
+		while t < 3:
+
+			try:
+				driver.execute_script("javascript:$('.ah-card-offer-add-to-card').each(function(i){$(this).click();});")
+			except:
+				pass
+
+			try:
+				driver.execute_script("javascript:$('.ah-Add-to-card').each(function(i){$(this).click();});")
+			except:
+				pass
+
+			time.sleep(1)
+			t += 1
 
 		# logout
 		try:
@@ -184,6 +216,8 @@ def loginTest(username, password, outputlog = True):
 
 def main():
 	username, password = loadConfig("config.csv")
+	# username = username[16:]
+	# password = password[16:]
 	loginTest(username, password, outputlog = True)
 
 if __name__ == '__main__':

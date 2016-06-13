@@ -98,6 +98,8 @@ def getAddedOffers(username, password, outputlog = True):
 			print "username/password combination is incorrect..."
 			continue
 
+		time.sleep(2)
+
 		# print "Waiting for page to fully load..."
 		# for i in range(5):
 		# 	time.sleep(1)
@@ -107,22 +109,48 @@ def getAddedOffers(username, password, outputlog = True):
 
 		# just in case the feedback banner appears
 		try:
-			driver.find_element_by_class_name("srCloseBtn").click()
-			time.sleep(2)
+			driver.find_element_by_class_name("srCloseBtn").click()		
 		except:
-			pass
+			try:
+				driver.find_element_by_class_name("fsrCloseBtn").click()
+			except:
+				pass
+		time.sleep(1)
+
+		# scroll down
+		driver.execute_script("window.scrollBy(0, 1250);")
 
 		# click on Added to Card
 		flag = True
 		while flag:
 			try:
-				driver.find_element_by_class_name("ah-addedCard").click()
-				time.sleep(2)
+				# driver.find_element_by_class_name("ah-addedCard").click()
+				driver.find_element_by_xpath("//*[contains(text(), 'Added to Card')]").click()
+				time.sleep(1)
 				flag = False
 			except:
-				driver.execute_script("window.scrollBy(0, -50);")
-				time.sleep(2)
+				driver.execute_script("window.scrollBy(0, -150);")
+				time.sleep(1)
 				continue
+
+		# # click on 'Added to Card'
+		# added_to_card = driver.find_elements_by_xpath("//*[contains(text(), 'Added to Card')]")
+		# for atc in added_to_card:
+		# 	try:
+		# 		atc.click()
+		# 	except:
+		# 		pass
+		# 		time.sleep(2)
+		
+		# scroll down
+		driver.execute_script("window.scrollBy(0, 1250);")
+
+		# click on 'load more'
+		try:
+			driver.find_element_by_xpath("//*[contains(text(), 'Load More')]").click()
+		except:
+			pass
+		time.sleep(2)
 		
 		# old version + new version
 		infos = driver.find_elements_by_class_name("ah-added-card-offer-info") + \
@@ -131,20 +159,22 @@ def getAddedOffers(username, password, outputlog = True):
 			driver.find_elements_by_class_name("ah-card-offer-expiration-date")
 		icons = driver.find_elements_by_class_name("ah-card-offer-icon")
 
+		# double + sign as separator
 		offerinfos = [info.text.encode('utf-8') for info in infos]
 		offerdates = [date.text.encode('utf-8') for date in dates]
-		allinfos.append([offerinfos[i].replace('\n','+')+'+'+offerdates[i] for i in range(len(offerinfos))])
-		masterinfo = sorted(set(masterinfo+[offerinfos[i].replace('\n','+')+'+'+offerdates[i] for i in range(len(offerinfos))]))
+		allinfos.append([offerdates[i]+'++'+offerinfos[i].replace('\n','++') for i in range(len(offerinfos))])
+		# sort by date instead of names
+		masterinfo = sorted(set(masterinfo+[offerdates[i]+'++'+offerinfos[i].replace('\n','++') for i in range(len(offerinfos))]))
 
-		# new version dosen't have offer type
-		types = []
-		offertypes = []
-		if len(icons) != 0:
-			types = [driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) \
-				{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', icon)['class'].encode('utf-8') for icon in icons]
-			offertypes = [type[27:-5] for type in types]
+		# # new version dosen't have offer type
+		# types = []
+		# offertypes = []
+		# if len(icons) != 0:
+		# 	types = [driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) \
+		# 		{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', icon)['class'].encode('utf-8') for icon in icons]
+		# 	offertypes = [type[27:-5] for type in types]
 
-		# print out all offers including (type), info and expiration date
+		# # print out all offers including (type), info and expiration date
 		# i = 1
 		# if len(offerinfos) == len(offerdates):
 
@@ -157,12 +187,14 @@ def getAddedOffers(username, password, outputlog = True):
 		# 		print ""
 		# 		i += 1
 
+		time.sleep(1)
+		
 		# logout
 		try:
 			WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
 		except:
 			pass
-		time.sleep(2)
+		time.sleep(1)
 
 		# eachendtime = time.time()
 		# print "You have logged out..."
@@ -179,8 +211,9 @@ def getAddedOffers(username, password, outputlog = True):
 	# print "--------------------------------------------------------------"
 
 	for i in range(3):
+		# replace comma in the any of the 
 		for info in masterinfo:
-			sys.stdout.write(','+info.split('+')[i].replace(',',' and'))
+			sys.stdout.write(','+info.split('++')[i].replace(',',''))
 		sys.stdout.write('\n')
 
 	for i in range(len(username)):
