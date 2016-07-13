@@ -3,30 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from datetime import datetime
 import sys
 import time
-import csv
-
-def loadConfig(filename):
-	'''
-		load your config.csv file
-		the file should contain username, password in each line
-		make sure the file is under the same directory
-	'''
-
-	username = []
-	password = []
-
-	try:
-		f = open(filename, 'rb')
-		reader = csv.reader(f)
-		for row in reader:
-			username.append(row[0])
-			password.append(row[1])
-		f.close()
-	except:
-		print "file read failed..."
-		return username, password
-
-	return username, password
+from helper import loadConfig
 
 
 def getBalance(username, password, outputlog = True):
@@ -44,6 +21,7 @@ def getBalance(username, password, outputlog = True):
 	# use phantom JS / Firefox
 	driver = webdriver.PhantomJS()
 	# driver = webdriver.Firefox()
+	# driver = webdriver.Chrome('./chromedriver')
 
 	# some parameters
 	emailFieldID = "lilo_userName"
@@ -171,7 +149,6 @@ def getBalance(username, password, outputlog = True):
 	driver.quit()
 
 def main():
-
 	username, password = loadConfig("major.csv")
 	getBalance(username, password, outputlog = True)
 
