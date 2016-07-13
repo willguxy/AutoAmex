@@ -1,7 +1,8 @@
-# AutoAmex
+# AutoAmex / AutoTwitter
 - automatically adding available amex offers under your account
 - you are responsible for creating a config.csv file under the same directory
 - for further automation on Mac, you can use Automator to create a repeated calender event
+- (update July 13th 2016) AutoTwitter that checks if your twitter account is still alive
 
 # Disclaimer
 - your private data is NOT secured if you just put it in a csv file
