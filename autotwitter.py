@@ -7,6 +7,31 @@ from helper import loadConfig, twitterLogIn, twitterLogOut
 website = "https://twitter.com/download?logged_out=1&lang=en"
 
 
+def skipAddPhoneNumber(driver):
+	try:
+		driver.find_element_by_class_name("modal-btn js-promptDismiss modal-close js-close").click()
+		# document.getElementsByClassName("modal-btn js-promptDismiss modal-close js-close")[0].click()
+	except:
+		pass
+
+
+def clickOnNotifications(driver):
+	driver.find_element_by_class_name("people notifications").click()
+
+
+def getDriver():
+	# use phantom JS/Firefox/Chrome
+	# driver = webdriver.PhantomJS()
+	# driver = webdriver.Firefox()
+	chrome_options = webdriver.ChromeOptions()
+	chrome_options.add_argument("--incognito")
+	driver = webdriver.Chrome(executable_path='./chromedriver', chrome_options=chrome_options)
+	# driver.maximize_window()
+	driver.set_window_size(1440,900)
+	driver.set_window_position(0,0)
+	return driver
+
+
 def loginTest(username, password, outputlog = True):
 	# re-route output
 	orig_stdout = sys.stdout
@@ -26,11 +51,7 @@ def loginTest(username, password, outputlog = True):
 			logfile.close()
 		return
 
-	# use phantom JS/Firefox/Chrome
-	# driver = webdriver.PhantomJS()
-	# driver = webdriver.Firefox()
-	driver = webdriver.Chrome('./chromedriver')
-	driver.maximize_window()
+	driver = getDriver()
 	begintime  = time.time()
 
 	# loop through all username/password combinations
@@ -60,6 +81,8 @@ def loginTest(username, password, outputlog = True):
 			continue # end current loop
 
 		time.sleep(2)
+		skipAddPhoneNumber(driver)
+		time.sleep(1)
 
 		# main program
 		status = 'unknown'
@@ -84,19 +107,28 @@ def loginTest(username, password, outputlog = True):
 		print "Status: %s" % status
 		time.sleep(1)
 
+		driver.get("https://twitter.com/i/notifications")  # load notification page
+		time.sleep(1)
+
 		if status != 'challenge':
 			# logout
 			try:
 				twitterLogOut(driver)
 			except:
 				print "Error: Cannot find logout button [%s]" % username[idx]
+				time.sleep(10)
 				if outputlog:
 					sys.stdout = orig_stdout
 					logfile.close()
 				driver.quit()
-			time.sleep(2)
-
 		print "--------------------------------------------------------------"
+
+		driver.refresh()
+		time.sleep(2)
+		try:
+			twitterLogOut(driver)
+		except:
+			pass
 	
 	endtime = time.time()
 	# print summary
