@@ -38,7 +38,7 @@
 # step-by-step installation tutorial on Mac OS for beginners
 - Download and install Anaconda here: https://www.continuum.io/downloads (newer version of Mac OS has built-in python, but may not be the lastest version)
 - Make sure the bin folder of anaconda is under your $PATH environment variable. if you run `echo $PATH` in your terminal, you should see `/Users/yourname/anaconda/bin` in your `$PATH`.
-- update your conda by running "conda update conda" and "conda update anaconda"
+- update your conda by running `conda update conda` and `conda update anaconda`
 - I would recommend using homebrew to manage your packages on Mac: http://brew.sh/ (just copy and paste that one line of Ruby code in your terminal)
 - by default, homebrew stores executables under `/usr/local/bin`
 - update homebrew by `brew update` and then `brew upgrade`
