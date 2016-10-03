@@ -1,8 +1,9 @@
-# AutoAmex / AutoTwitter
+# AutoAmex / AutoTwitter / Balance checker / All offers
 - automatically adding available amex offers under your account
 - you are responsible for creating a config.csv file under the same directory
 - for further automation on Mac, you can use Automator to create a repeated calender event
 - (update July 13th 2016) AutoTwitter that checks if your twitter account is still alive
+- additional functionalities: summarize all balance information in the log file; summarize all available offers in a csv file with neat formatting
 
 # Disclaimer
 - your private data is NOT secured if you just put it in a csv file
