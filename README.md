@@ -1,3 +1,9 @@
+# Important Note
+- Please note that current version only works if you have one card per online account
+- Using this script to add offer to multiple accounts under the same login would only add offers to the default card
+- To recover the offers, you'd need to remove the other cards from the online account and add them back
+- multiple tab would do the trick, but I didn't implement it because of its lack of reliability
+
 # AutoAmex / AutoTwitter / Balance checker / All offers
 - automatically adding available amex offers under your account
 - you are responsible for creating a config.csv file under the same directory
