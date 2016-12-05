@@ -4,6 +4,14 @@
 - To recover the offers, you'd need to remove the other cards from the online account and add them back
 - multiple tab would do the trick, but I didn't implement it because of its lack of reliability
 
+# Update on Dec 5th 2016
+- OffersBot has stopped updating their twitter account. You'd now need to parse the RSS feed from their website
+- I haven't found any free RSS-to-Twiter tools online. TwitterFeed used to be the one, but it's gone now
+- Alternative to the approach provided here, you can pay some fee and use other services, or build your own cloud machine that does this job
+- Here `parseOffersBotRss.py` lets you get the lastest hashtags and store locally in a file called `hashtags.txt`. `AutoTwitter.py` is the other part which finds this text file in the same folder, and run some Selenium job to publish these hashtags. I added some arbitrary non-sense in front just in case this behavior triggers Twitter spam detector
+- `AutoTwitter.py` is also self-contained in that you can pass command line argument to it, and it will pusblish whatever you pass in
+- Everything else stays the same. I haven't tested the balace checker so this one might not work very well now.
+
 # AutoAmex / AutoTwitter / Balance checker / All offers
 - automatically adding available amex offers under your account
 - you are responsible for creating a config.csv file under the same directory
