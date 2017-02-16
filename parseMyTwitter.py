@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import json
 import tweepy
 from tweepy import OAuthHandler

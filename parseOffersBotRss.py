@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+import sys
 import feedparser
 from time import mktime
 from datetime import datetime
@@ -14,12 +17,15 @@ def getFeed(lookback=0):
   loffers = list(set(loffers))
   return loffers
 
-def main():
-  hashtags = getFeed()
+def main(argv):
+  lookback = 0
+  if len(argv) >= 1:
+    lookback = int(argv[0])
+  hashtags = getFeed(lookback)
   hashtags = [str(ht) for ht in hashtags]
   output = ' '.join(hashtags)
   with open('hashtags.txt', 'w') as out_file:
     out_file.write(output)
 
 if __name__ == "__main__":
-  main()
+  main(sys.argv[1:])

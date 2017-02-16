@@ -4,7 +4,7 @@ from selenium import webdriver
 from datetime import datetime
 import sys
 import time
-from helper import loadConfig, closeFeedback, clickViewMore, clickOnOffers, amexLogIn, amexLogOut
+from helper import loadConfig, closeFeedback, clickViewMore, clickOnOffers, amexLogIn, amexLogOut, clickOnLoadMore
 
 amexWebsite = "https://online.americanexpress.com/myca/logon/us/action/LogonHandler?request_type=LogonHandler&Face=en_US&inav=iNavLnkLog"
 
@@ -57,7 +57,7 @@ def loginTest(username, password, outputlog = True):
       continue # end current loop
 
     closeFeedback(driver) # just in case the feedback banner appears
-    clickViewMore(driver) # scroll down and click view more
+    clickOnLoadMore(driver) # scroll down and click load more
 
     # store offer names and click on offers
     tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + driver.find_elements_by_class_name("ah-offer-name")
