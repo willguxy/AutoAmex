@@ -35,7 +35,7 @@ def dumpHashtags(api, max_num=10, max_day=1):
   return hashtags
 
 def main():
-  myauth = getAuth('cred.json')
+  myauth = getAuth('../conf/cred.json')
   api = setupAPI(myauth)
   hashtags = dumpHashtags(api, 10, 1)
   hashtags = [str(ht) for ht in hashtags]

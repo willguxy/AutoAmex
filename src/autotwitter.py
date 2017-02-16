@@ -56,7 +56,7 @@ def loginTest(username, password, outputlog = True, tweet = None):
     # use current time as log file
     logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
     logfilename = "twitter_" + logfilename.replace(':', '_') + ".log"
-    logfile = open(logfilename, 'w+')
+    logfile = open('../tmp/' + logfilename, 'w+')
     sys.stdout = logfile
   # input error handle
   if username == [] or password == [] or len(username) != len(password):
@@ -173,7 +173,7 @@ def loginTest(username, password, outputlog = True, tweet = None):
 
 
 def main(argv):
-  username, password = loadConfig("twitter_config.csv")
+  username, password = loadConfig("../conf/twitter_config.csv")
   # username = username[40:]
   # password = password[40:]
   text = None

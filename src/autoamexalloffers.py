@@ -18,7 +18,7 @@ def getAddedOffers(username, password, outputlog = True):
     # use current time as log file
     logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
     logfilename = "offers " + logfilename.replace(':', '_') + ".csv"
-    logfile = open(logfilename, 'w+')
+    logfile = open('../tmp/' + logfilename, 'w+')
     sys.stdout = logfile
   # input error handle
   if username == [] or password == [] or len(username) != len(password):
@@ -128,7 +128,7 @@ def getAddedOffers(username, password, outputlog = True):
 
 
 def main():
-  username, password = loadConfig("config.csv")
+  username, password = loadConfig("../conf/config.csv")
   getAddedOffers(username, password, outputlog = True)
 
 if __name__ == '__main__':

@@ -15,7 +15,7 @@ def loginTest(username, password, outputlog = True):
     # use current time in log file name
     logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
     logfilename = logfilename.replace(':', '_') + ".log"
-    logfile = open(logfilename, 'w+')
+    logfile = open('../tmp/' + logfilename, 'w+')
     sys.stdout = logfile
 
   # input error handle
@@ -93,7 +93,7 @@ def loginTest(username, password, outputlog = True):
 
 
 def main():
-  username, password = loadConfig("config.csv")
+  username, password = loadConfig("../conf/config.csv")
   loginTest(username, password, outputlog = True)
 
 if __name__ == '__main__':

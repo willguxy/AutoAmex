@@ -17,7 +17,7 @@ def getBalance(username, password, outputlog = True):
     # use current time as log file
     logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
     logfilename = "balance " + logfilename.replace(':', '_') + ".log"
-    logfile = open(logfilename, 'w+')
+    logfile = open('../tmp/' + logfilename, 'w+')
     sys.stdout = logfile
 
   # use phantom JS / Firefox
@@ -151,7 +151,7 @@ def getBalance(username, password, outputlog = True):
   driver.quit()
 
 def main():
-  username, password = loadConfig("major.csv")
+  username, password = loadConfig("../conf/major.csv")
   getBalance(username, password, outputlog = True)
 
 if __name__ == '__main__':
