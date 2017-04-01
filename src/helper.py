@@ -1,4 +1,6 @@
 # helper files for amex automation
+
+from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 import csv
 import time
@@ -11,6 +13,22 @@ def GenPasswd2(length=8, chars=string.letters + string.digits):
 
 def genRandomText():
   return GenPasswd2(8,string.digits) + GenPasswd2(15,string.ascii_letters)
+
+
+def getDriver(browser):
+  if browser.lower() == 'firefox':
+    driver = webdriver.Firefox()
+  elif browser.lower() == 'chrome':
+    driver = webdriver.Chrome('./chromedriver')
+  elif browser.lower() in ('phantomjs', 'headless'):
+    driver = webdriver.PhantomJS()
+  else:
+    print "WARNING: browser selection not valid, use PhantomJS as default"
+    driver = webdriver.PhantomJS()
+  driver.maximize_window()
+  driver.set_window_size(1440, 900)
+  driver.set_window_position(0, 0)
+  return driver
 
 
 def loadConfig(filename):

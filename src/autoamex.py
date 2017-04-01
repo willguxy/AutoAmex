@@ -4,11 +4,12 @@ from selenium import webdriver
 from datetime import datetime
 import sys
 import time
-from helper import loadConfig, closeFeedback, clickViewMore, clickOnOffers, amexLogIn, amexLogOut, clickOnLoadMore
+from helper import loadConfig, closeFeedback, clickViewMore, clickOnOffers, amexLogIn, \
+  amexLogOut, clickOnLoadMore, getDriver
 
 amexWebsite = "https://online.americanexpress.com/myca/logon/us/action/LogonHandler?request_type=LogonHandler&Face=en_US&inav=iNavLnkLog"
 
-def loginTest(username, password, outputlog = True):
+def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
   orig_stdout = sys.stdout # re-route output
   logfile = None
   if outputlog:
@@ -27,11 +28,7 @@ def loginTest(username, password, outputlog = True):
       logfile.close()
     return
 
-  # use phantom JS
-  driver = webdriver.PhantomJS()
-  # driver = webdriver.Firefox()
-  # driver = webdriver.Chrome('./chromedriver')
-  driver.maximize_window()
+  driver = getDriver(browser)
   begintime  = time.time()
 
   # loop through all username/password combinations
@@ -60,7 +57,8 @@ def loginTest(username, password, outputlog = True):
     clickOnLoadMore(driver) # scroll down and click load more
 
     # store offer names and click on offers
-    tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + driver.find_elements_by_class_name("ah-offer-name")
+    tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + \
+      driver.find_elements_by_class_name("ah-offer-name")
     tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
     tmpnames = filter(None, tmpnames)
     print "Available offers are:", ', '.join(tmpnames)
@@ -94,7 +92,7 @@ def loginTest(username, password, outputlog = True):
 
 def main():
   username, password = loadConfig("../conf/config.csv")
-  loginTest(username, password, outputlog = True)
+  loginTest(username, password, outputlog = True, browser = "PhantomJS")
 
 if __name__ == '__main__':
   main()
