@@ -5,7 +5,7 @@ from datetime import datetime
 import sys
 import time
 from helper import loadConfig, closeFeedback, clickViewMore, clickOnOffers, amexLogIn, \
-  amexLogOut, clickOnLoadMore, getDriver
+  amexLogOut, clickOnLoadMore, getDriver, collectOfferNames
 
 amexWebsite = "https://online.americanexpress.com/myca/logon/us/action/LogonHandler?request_type=LogonHandler&Face=en_US&inav=iNavLnkLog"
 
@@ -57,12 +57,11 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
     clickOnLoadMore(driver) # scroll down and click load more
 
     # store offer names and click on offers
-    tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + \
-      driver.find_elements_by_class_name("ah-offer-name")
-    tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
-    tmpnames = filter(None, tmpnames)
-    print "Available offers are:", ', '.join(tmpnames)
-    clickOnOffers(driver)
+    offernames = collectOfferNames(driver)
+    print "Available offers are:", offernames
+    if not offernames == '':
+      clickOnOffers(driver)
+    time.sleep(1)
       
     # logout
     try:
@@ -92,7 +91,7 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
 
 def main():
   username, password = loadConfig("../conf/config.csv")
-  loginTest(username, password, outputlog = True, browser = "PhantomJS")
+  loginTest(username, password, outputlog = True, browser = "Chrome")
 
 if __name__ == '__main__':
   main()

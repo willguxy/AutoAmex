@@ -15,6 +15,15 @@ def genRandomText():
   return GenPasswd2(8,string.digits) + GenPasswd2(15,string.ascii_letters)
 
 
+def collectOfferNames(driver):
+  tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + \
+  driver.find_elements_by_class_name("ah-offer-name")
+  tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
+  tmpnames = filter(None, tmpnames)
+  offernames = ', '.join(tmpnames)
+  return offernames
+
+
 def getDriver(browser):
   if browser.lower() == 'firefox':
     driver = webdriver.Firefox()
@@ -87,7 +96,10 @@ def clickOnAddedToCard(driver):
 
 
 def clickOnOffers(driver):
-  for t in range(2):
+  for t in range(3):
+    if collectOfferNames(driver) == '':
+      return
+    time.sleep(1)
     try:
       driver.execute_script("javascript:$('.ah-card-offer-add-to-card').each(function(i){$(this).click();});")
     except:
@@ -97,8 +109,9 @@ def clickOnOffers(driver):
     except:
       pass
     time.sleep(1)
-    if t == 0:
+    if t != 2:
       driver.refresh() # refresh the page
+      time.sleep(1)
       clickViewMore(driver)
 
 

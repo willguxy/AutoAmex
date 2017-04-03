@@ -5,12 +5,12 @@ from datetime import datetime
 import sys
 import time
 from datetime import datetime as dt
-from helper import loadConfig, closeFeedback, clickOnAddedToCard, clickOnLoadMore, amexLogIn, amexLogOut
+from helper import loadConfig, closeFeedback, clickOnAddedToCard, clickOnLoadMore, amexLogIn, amexLogOut, getDriver
 
 amexWebsite = "https://online.americanexpress.com/myca/logon/us/action/LogonHandler?request_type=LogonHandler&Face=en_US&inav=iNavLnkLog"
 
 
-def getAddedOffers(username, password, outputlog = True):
+def getAddedOffers(username, password, outputlog = True, browser = "Chrome"):
   # re-route output
   orig_stdout = sys.stdout
   logfile = None
@@ -32,8 +32,7 @@ def getAddedOffers(username, password, outputlog = True):
   # use phantom JS / Firefox
   # driver = webdriver.PhantomJS()
   # driver = webdriver.Firefox()
-  driver = webdriver.Chrome('./chromedriver')
-  driver.maximize_window()  
+  driver = getDriver(browser) 
   majorOfferDescMap = dict()
   majorOfferDateMap = dict()
   majorDateOfferPair = set()
