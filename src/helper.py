@@ -17,9 +17,13 @@ def genRandomText():
 
 def collectOfferNames(driver):
   tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + \
-  driver.find_elements_by_class_name("ah-offer-name")
+    driver.find_elements_by_class_name("ah-offer-name")
   tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
   tmpnames = filter(None, tmpnames)
+  if len(tmpnames) == 0:
+    tmpoffernames = driver.find_elements_by_class_name("offer-info")
+    tmpnames = [n.text.encode('utf-8').split('\n')[1] for n in tmpoffernames]
+  print "Found " + str(len(tmpnames)) + " offers"
   offernames = ', '.join(tmpnames)
   return offernames
 
@@ -75,8 +79,15 @@ def clickViewMore(driver):
   try:
     driver.find_element_by_xpath("//*[contains(text(), 'View More')]").click()
   except:
-    pass
-  time.sleep(1)
+    for i in range(3):
+      try:
+        driver.find_elements_by_xpath("//*[contains(text(), 'View All')]")[1].click()
+        time.sleep(2)
+        return
+      except:
+        driver.execute_script("window.scrollBy(0, -250);") # scroll up
+        pass
+  time.sleep(2)
 
 
 # click on Added to Card
@@ -98,6 +109,7 @@ def clickOnAddedToCard(driver):
 def clickOnOffers(driver):
   for t in range(3):
     if collectOfferNames(driver) == '':
+      print "All offers added"
       return
     time.sleep(1)
     try:
@@ -106,6 +118,10 @@ def clickOnOffers(driver):
       pass
     try:
       driver.execute_script("javascript:$('.ah-Add-to-card').each(function(i){$(this).click();});")
+    except:
+      pass
+    try:
+      driver.execute_script("javascript:$('.offer-cta').each(function(i){$(this).click();});")
     except:
       pass
     time.sleep(1)
@@ -121,7 +137,14 @@ def clickOnLoadMore(driver):
   try:
     driver.find_element_by_xpath("//*[contains(text(), 'Load More')]").click()
   except:
-    pass
+    for i in range(3):
+      try:
+        driver.find_elements_by_xpath("//*[contains(text(), 'View All')]")[1].click()
+        time.sleep(2)
+        return
+      except:
+        driver.execute_script("window.scrollBy(0, -250);") # scroll up
+        pass
   time.sleep(2)
 
 
@@ -135,6 +158,7 @@ def amexLogIn(driver, usr, pwd):
   WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(passFieldID)).clear()
   WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(passFieldID)).send_keys(pwd)
   WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(loginBtnID)).click()
+  time.sleep(3)
 
 
 def amexLogOut(driver):

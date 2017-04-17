@@ -80,6 +80,12 @@ def getAddedOffers(username, password, outputlog = True, browser = "Chrome"):
     majorOfferDescMap.update(offerDescMap)
     majorOfferDateMap.update(offerDateMap)
     majorDateOfferPair.update(dateOfferPair)
+    # accomadate new AMEX GUI
+    if len(offers) == 0:
+      offers = driver.find_elements_by_class_name("offer-info")
+      tmpnames = [n.text.encode('utf-8').split('\n')[1] for n in offers]
+      for n in tmpnames:
+        offersSet.add(n)
     userOffersList.append(offersSet)
 
     time.sleep(1)
