@@ -82,10 +82,23 @@ def getAddedOffers(username, password, outputlog = True, browser = "Chrome"):
     majorDateOfferPair.update(dateOfferPair)
     # accomadate new AMEX GUI
     if len(offers) == 0:
-      offers = driver.find_elements_by_class_name("offer-info")
-      tmpnames = [n.text.encode('utf-8').split('\n')[1] for n in offers]
+      offers = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
+      offerstext = [n.text.encode('utf-8') for n in offers]
+      offerstext = filter(None, offerstext)
+      #offersplit = [text.split('\n') for text in offerstext]
+      #offerexpires = driver.find_elements_by_class_name("offer-expires")
+      #offerdates = [e.text.encode('utf-8').split('\n')[1] for e in offerexpires]
+      tmpnames = [offerstext.split('\n')[1] for n in offerstext]
       for n in tmpnames:
         offersSet.add(n)
+      #tmpdesc = [n.text.encode('utf-8').split('\n')[0] for n in offers]
+      #for i in len(tmpnames):
+      #  expiration = dt.strptime(offerexpires[i], '%m/%d/%Y')
+      #  if expiration > dt.now():
+      #    offerDescMap[tmpnames[i]] = tmpdesc[i]
+      #    offerDateMap[tmpnames[i]] = offerexpires[i]
+      #    dateOfferPair.add((expiration, tmpnames[i]))
+      #    offersSet.add(tmpnames[i])
     userOffersList.append(offersSet)
 
     time.sleep(1)

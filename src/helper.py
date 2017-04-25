@@ -21,8 +21,11 @@ def collectOfferNames(driver):
   tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
   tmpnames = filter(None, tmpnames)
   if len(tmpnames) == 0:
-    tmpoffernames = driver.find_elements_by_class_name("offer-info")
-    tmpnames = [n.text.encode('utf-8').split('\n')[1] for n in tmpoffernames]
+    tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
+    tmpoffernames = [e.find_element_by_xpath('..') for e in tmpoffernames]
+    tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
+    tmpnames = filter(None, tmpnames)
+    tmpnames = [n.split('\n')[1] for n in tmpnames]
   print "Found " + str(len(tmpnames)) + " offers"
   offernames = ', '.join(tmpnames)
   return offernames
@@ -120,8 +123,12 @@ def clickOnOffers(driver):
       driver.execute_script("javascript:$('.ah-Add-to-card').each(function(i){$(this).click();});")
     except:
       pass
+    #try:
+    #  driver.execute_script("javascript:$('.offer-cta').each(function(i){$(this).click();});")
+    #except:
+    #  pass
     try:
-      driver.execute_script("javascript:$('.offer-cta').each(function(i){$(this).click();});")
+      [e.click() for e in driver.find_elements_by_xpath('//*[@title="Add to Card"]')]
     except:
       pass
     time.sleep(1)
