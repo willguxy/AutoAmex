@@ -26,6 +26,10 @@ def collectOfferNames(driver):
     tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
     tmpnames = filter(None, tmpnames)
     tmpnames = [n.split('\n')[1] for n in tmpnames]
+  else:
+    tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
+    tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
+    tmpnames = filter(None, tmpnames)
   print "Found " + str(len(tmpnames)) + " offers"
   offernames = ', '.join(tmpnames)
   return offernames
