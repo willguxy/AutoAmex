@@ -7,6 +7,11 @@ import time
 from random import choice
 import string
 
+# TODO: Add these websites to actions
+# Only working on the new GUI
+offer_page = "https://global.americanexpress.com/offers/eligible"
+added_page = "https://global.americanexpress.com/offers/enrolled"
+
 def GenPasswd2(length=8, chars=string.letters + string.digits):
   return ''.join([choice(chars) for i in range(length)])
 
@@ -20,12 +25,17 @@ def collectOfferNames(driver):
     driver.find_elements_by_class_name("ah-offer-name")
   tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
   tmpnames = filter(None, tmpnames)
+  # in the case of new GUI or nothing on old GUI
   if len(tmpnames) == 0:
     tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
-    tmpoffernames = [e.find_element_by_xpath('..') for e in tmpoffernames]
+    tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
+    # only keep object with valid text
+    tmpoffernames = [tmpoffernames[i] for i in range(len(tmpoffernames)) if tmpnames[i] != '']
+    tmpoffernames = [e.find_element_by_xpath('..') for e in tmpoffernames] # get parent
     tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
     tmpnames = filter(None, tmpnames)
     tmpnames = [n.split('\n')[1] for n in tmpnames]
+  # update the method to retrieve offers in old GUI when offers exist
   else:
     tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
     tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
@@ -36,18 +46,21 @@ def collectOfferNames(driver):
 
 
 def getDriver(browser):
+  chrome_options = webdriver.ChromeOptions()
+  chrome_options.add_argument("--incognito")
+  chrome_options.add_argument("--window-size=1440,900")
   if browser.lower() == 'firefox':
     driver = webdriver.Firefox()
   elif browser.lower() == 'chrome':
-    driver = webdriver.Chrome('./chromedriver')
+    driver = webdriver.Chrome('./chromedriver', chrome_options=chrome_options)
   elif browser.lower() in ('phantomjs', 'headless'):
     driver = webdriver.PhantomJS()
   else:
     print "WARNING: browser selection not valid, use PhantomJS as default"
     driver = webdriver.PhantomJS()
-  driver.maximize_window()
-  driver.set_window_size(1440, 900)
-  driver.set_window_position(0, 0)
+  # driver.maximize_window()
+  # driver.set_window_size(1440, 900)
+  # driver.set_window_position(0, 0)
   return driver
 
 
