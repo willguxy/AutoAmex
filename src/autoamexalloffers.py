@@ -84,13 +84,19 @@ def getAddedOffers(username, password, outputlog = True, browser = "Chrome"):
     if len(offers) == 0:
       offers = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
       offerstext = [n.text.encode('utf-8') for n in offers]
+      offers = [offers[i] for i in range(len(offers)) if offerstext[i] != '']
+      offerstext = filter(None, offerstext)
+      offers = [e.find_element_by_xpath('..') for e in offers]
+      offerstext = [n.text.encode('utf-8') for n in offers]
       offerstext = filter(None, offerstext)
       #offersplit = [text.split('\n') for text in offerstext]
       #offerexpires = driver.find_elements_by_class_name("offer-expires")
       #offerdates = [e.text.encode('utf-8').split('\n')[1] for e in offerexpires]
-      tmpnames = [offerstext.split('\n')[1] for n in offerstext]
+      tmpnames = [n.split('\n')[1] for n in offerstext]
+      offerDescMap = {n.split('\n')[1]: n.split('\n')[0] for n in offerstext}
       for n in tmpnames:
         offersSet.add(n)
+      majorOfferDescMap.update(offerDescMap)
       #tmpdesc = [n.text.encode('utf-8').split('\n')[0] for n in offers]
       #for i in len(tmpnames):
       #  expiration = dt.strptime(offerexpires[i], '%m/%d/%Y')

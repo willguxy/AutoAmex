@@ -20,27 +20,23 @@ def genRandomText():
   return GenPasswd2(8,string.digits) + GenPasswd2(15,string.ascii_letters)
 
 
-def collectOfferNames(driver):
+def newOrNone(driver):
   tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + \
     driver.find_elements_by_class_name("ah-offer-name")
   tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
   tmpnames = filter(None, tmpnames)
-  # in the case of new GUI or nothing on old GUI
-  if len(tmpnames) == 0:
-    tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
-    tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
-    # only keep object with valid text
-    tmpoffernames = [tmpoffernames[i] for i in range(len(tmpoffernames)) if tmpnames[i] != '']
-    tmpoffernames = [e.find_element_by_xpath('..') for e in tmpoffernames] # get parent
-    tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
-    tmpnames = filter(None, tmpnames)
-    tmpnames = [n.split('\n')[1] for n in tmpnames]
-  # update the method to retrieve offers in old GUI when offers exist
-  else:
-    tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
-    tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
-    tmpnames = filter(None, tmpnames)
-  print "Found " + str(len(tmpnames)) + " offers"
+  return len(tmpnames) == 0
+
+def collectOfferNames(driver):
+  tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
+  tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
+  tmpoffernames = [tmpoffernames[i] for i in range(len(tmpoffernames)) if tmpnames[i] != '']
+  # differentiate between new and old offers
+  i = 1 if newOrNone(driver) else 0
+  tmpoffernames = [e.find_element_by_xpath('..') for e in tmpoffernames] # get parent
+  tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
+  tmpnames = filter(None, tmpnames)
+  tmpnames = [n.split('\n')[i] if '\n' in n else n for n in tmpnames]
   offernames = ', '.join(tmpnames)
   return offernames
 
@@ -145,7 +141,8 @@ def clickOnOffers(driver):
     #except:
     #  pass
     try:
-      [e.click() for e in driver.find_elements_by_xpath('//*[@title="Add to Card"]')]
+      [e.click() for e in driver.find_elements_by_xpath('//*[@title="Add to Card"]') + \
+              driver.find_elements_by_xpath('//*[@title="Save Promo Code"]')]
     except:
       pass
     time.sleep(1)
@@ -187,7 +184,8 @@ def amexLogIn(driver, usr, pwd):
 
 def amexLogOut(driver):
   logoutBtnID = "iNavLogOutButton"
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
+  # WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(logoutBtnID)).click()
+  WebDriverWait(driver, 3).until(lambda driver: find_elements_by_xpath("//*[contains(text(), 'Log Out')]")).click()
 
 
 def twitterLogIn(driver, usr, pwd):
