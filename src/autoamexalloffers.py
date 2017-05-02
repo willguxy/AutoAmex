@@ -60,6 +60,8 @@ def getAddedOffers(username, password, outputlog = True, browser = "Chrome"):
     closeFeedback(driver)
     clickOnAddedToCard(driver)
     clickOnLoadMore(driver)
+    time.sleep(2)
+    closeFeedback(driver)
 
     # main program
     offers = driver.find_elements_by_class_name("ah-card-offer")
