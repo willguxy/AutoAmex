@@ -1,4 +1,4 @@
 #!/bin/bash
 docker run -d -v $(pwd):/autoamex \
     atreyo/docker-python-selenium-phantomjs \
-    /autoamex/src/autoamex.py 
+    python /autoamex/src/autoamex.py phantomjs
