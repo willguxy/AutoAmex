@@ -1,3 +1,9 @@
+# Docker compatiblility
+- I used exisiting public image on Docker hub, but it could go obsolete. I'll update when I build and upload my own
+- Linux users, just run `./docker-start.sh`
+- (I would need to figure something out for Windows users)
+- The folder is mounted, so the log files would appear in your local dir as well
+
 # Important Note
 - Please note that current version only works if you have one card per online account
 - Using this script to add offer to multiple accounts under the same login would only add offers to the default card
