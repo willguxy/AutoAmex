@@ -89,11 +89,14 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
   driver.quit()
 
 
-def main():
+def main(argv):
+  browser = 'Chrome'
+  if len(argv) >= 1:
+    browser = argv[0]
   username, password = loadConfig("../conf/config.csv")
-  loginTest(username, password, outputlog = True, browser = "Chrome")
+  loginTest(username, password, outputlog=True, browser=browser)
 
 if __name__ == '__main__':
-  main()
+  main(sys.argv[1:])
 
 
