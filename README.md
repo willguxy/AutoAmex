@@ -16,6 +16,19 @@ You are supposed to have one online account per card. This program doesn't work 
 - The folder is mounted, so the log files would appear in your local dir as well
 - Note the time stamp of those log files would be UTC instead
 
+# Docker for Windows users
+- Check there installation guide for Windows 10 at https://docs.docker.com/docker-for-windows/
+- If you are using older versions, please use Docker Toolbox https://docs.docker.com/toolbox/overview/
+- It would install both Git and VirtualBox to your computer as well
+- Start Docker and make sure it's running on your machine (should be able see the whale icon on lower right corner)
+- You should be able to see a terminal popped up (MINGW64). This would be Linux-like instead of `cmd.exe` looking.
+- Your host disk is automatically mounted. This means any changes will be reflected on both sides.
+- The starting directory is *your personal folder* on Windows
+- Find your downloaded `AutoAmex` repo. You can use Git or just download and unzip it
+- Remember to create your own `config.csv` file before proceeding
+- Go to the repo folder and run `./docker-start.sh`
+- Setting jobs on Windows is left out for now. You would need to do your own research to find out how it's done with Docker on Windows
+
 # AutoTwitter
 - OffersBot has stopped updating their twitter account. You'd now need to parse the RSS feed from their website
 - I haven't found any free RSS-to-Twiter tools online. TwitterFeed used to be the one, but it's gone now
