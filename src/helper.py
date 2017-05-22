@@ -49,6 +49,8 @@ def getDriver(browser):
     driver = webdriver.Firefox()
   elif browser.lower() == 'chrome':
     driver = webdriver.Chrome('./chromedriver', chrome_options=chrome_options)
+  elif browser.lower() == 'chrome_linux':
+    driver = webdriver.Chrome('./chromedriver_linux64', chrome_options=chrome_options)
   elif browser.lower() in ('phantomjs', 'headless'):
     driver = webdriver.PhantomJS()
   else:
