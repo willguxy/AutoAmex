@@ -2,3 +2,6 @@
 .*.swp
 *.csv
 *.log
+*.json
+*.txt
+*.xlsx

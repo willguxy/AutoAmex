@@ -4,7 +4,7 @@ from selenium import webdriver
 from datetime import datetime
 import sys
 import time
-from helper import loadConfig, closeFeedback, clickViewMore, clickOnOffers, amexLogIn, \
+from helper import loadConfig, closeFeedback, clickOnViewMore, clickOnOffers, amexLogIn, \
   amexLogOut, clickOnLoadMore, getDriver, collectOfferNames
 
 amexWebsite = "https://online.americanexpress.com/myca/logon/us/action/LogonHandler?request_type=LogonHandler&Face=en_US&inav=iNavLnkLog"
@@ -36,7 +36,7 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
     eachbegintime = time.time()
     print "--------------------------------------------------------------"
     print "#", idx+1, "ID:", username[idx]
-    # just in case network connection is broken 
+    # just in case network connection is broken
     try:
       driver.get(amexWebsite)
     except:
@@ -62,7 +62,7 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
     if not offernames == '':
       clickOnOffers(driver)
     time.sleep(1)
-      
+
     # logout
     try:
       amexLogOut(driver)

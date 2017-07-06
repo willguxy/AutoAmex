@@ -20,23 +20,25 @@ def genRandomText():
   return GenPasswd2(8,string.digits) + GenPasswd2(15,string.ascii_letters)
 
 
-def newOrNone(driver):
-  tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + \
-    driver.find_elements_by_class_name("ah-offer-name")
-  tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
-  tmpnames = filter(None, tmpnames)
-  return len(tmpnames) == 0
+# def newOrNone(driver):
+#   tmpoffernames = driver.find_elements_by_class_name("ah-card-offer-name") + \
+#     driver.find_elements_by_class_name("ah-offer-name")
+#   tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
+#   tmpnames = filter(None, tmpnames)
+#   return len(tmpnames) == 0
 
 def collectOfferNames(driver):
-  tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
+  # tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Spend ') or contains(text(), 'Get ')]")
+  tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Add to Card') \
+    or contains(text(), 'Save Promo Code')]/../../..")
   tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
   tmpoffernames = [tmpoffernames[i] for i in range(len(tmpoffernames)) if tmpnames[i] != '']
   # differentiate between new and old offers
-  i = 1 if newOrNone(driver) else 0
-  tmpoffernames = [e.find_element_by_xpath('..') for e in tmpoffernames] # get parent
+  # i = 1 if newOrNone(driver) else 0
+  # tmpoffernames = [e.find_element_by_xpath('../../..') for e in tmpoffernames] # get parent's parent
   tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
   tmpnames = filter(None, tmpnames)
-  tmpnames = [n.split('\n')[i] if '\n' in n else n for n in tmpnames]
+  tmpnames = [n.split('\n')[1] if '\n' in n else n for n in tmpnames]
   offernames = ', '.join(tmpnames)
   return offernames
 
@@ -91,15 +93,15 @@ def closeFeedback(driver):
   time.sleep(1)
 
 
-def clickViewMore(driver):
-  driver.execute_script("window.scrollBy(0, 1250);") #scroll down
+def clickOnViewMore(driver):
+  driver.execute_script("window.scrollBy(0, 2250);") #scroll down
   # click on view more if available
   try:
     driver.find_element_by_xpath("//*[contains(text(), 'View More')]").click()
   except:
     for i in range(3):
       try:
-        driver.find_elements_by_xpath("//*[contains(text(), 'View All')]")[1].click()
+        driver.find_element_by_xpath("//*[contains(text(), 'View All')]")[1].click()
         time.sleep(2)
         return
       except:
@@ -110,7 +112,7 @@ def clickViewMore(driver):
 
 # click on Added to Card
 def clickOnAddedToCard(driver):
-  driver.execute_script("window.scrollBy(0, 1250);") # scroll down
+  driver.execute_script("window.scrollBy(0, 2250);") # scroll down
   flag = True
   while flag:
     try:
@@ -127,7 +129,7 @@ def clickOnAddedToCard(driver):
 def clickOnOffers(driver):
   for t in range(3):
     if collectOfferNames(driver) == '':
-      print "All offers added"
+      # print "All offers added"
       return
     time.sleep(1)
     try:
@@ -142,27 +144,29 @@ def clickOnOffers(driver):
     #  driver.execute_script("javascript:$('.offer-cta').each(function(i){$(this).click();});")
     #except:
     #  pass
-    try:
-      [e.click() for e in driver.find_elements_by_xpath('//*[@title="Add to Card"]') + \
-              driver.find_elements_by_xpath('//*[@title="Save Promo Code"]')]
-    except:
-      pass
+    for e in driver.find_elements_by_xpath('//*[@title="Add to Card"]') + \
+            driver.find_elements_by_xpath('//*[@title="Save Promo Code"]'):
+      try:
+        e.click()
+        time.sleep(0.5)
+      except:
+        pass
     time.sleep(1)
     if t != 2:
       driver.refresh() # refresh the page
       time.sleep(1)
-      clickViewMore(driver)
+      clickOnLoadMore(driver)
 
 
 def clickOnLoadMore(driver):
-  driver.execute_script("window.scrollBy(0, 1250);") # scroll down
+  driver.execute_script("window.scrollBy(0, 2250);") # scroll down
   # click on 'load more'
   try:
     driver.find_element_by_xpath("//*[contains(text(), 'Load More')]").click()
   except:
     for i in range(3):
       try:
-        driver.find_elements_by_xpath("//*[contains(text(), 'View All')]")[1].click()
+        driver.find_elements_by_xpath("//*[contains(text(), 'View All')]")[5].click()
         time.sleep(2)
         return
       except:

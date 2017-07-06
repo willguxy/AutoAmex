@@ -32,7 +32,7 @@ def getAddedOffers(username, password, outputlog = True, browser = "Chrome"):
   # use phantom JS / Firefox
   # driver = webdriver.PhantomJS()
   # driver = webdriver.Firefox()
-  driver = getDriver(browser) 
+  driver = getDriver(browser)
   majorOfferDescMap = dict()
   majorOfferDateMap = dict()
   majorDateOfferPair = set()
