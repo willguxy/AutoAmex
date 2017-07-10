@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from datetime import datetime
 import sys
 import time
-from helper import loadConfig, twitterLogIn, twitterLogOut, genRandomText
+from helper import loadConfig, twitterLogIn, twitterLogOut, genRandomText, getDriver
 
 website = "https://twitter.com/download?logged_out=1&lang=en"
 
@@ -35,19 +35,6 @@ def sendTweet(driver, text):
   time.sleep(1)
 
 
-def getDriver():
-  # use phantom JS/Firefox/Chrome
-  # driver = webdriver.PhantomJS()
-  # driver = webdriver.Firefox()
-  chrome_options = webdriver.ChromeOptions()
-  chrome_options.add_argument("--incognito")
-  driver = webdriver.Chrome(executable_path='./chromedriver', chrome_options=chrome_options)
-  # driver.maximize_window()
-  driver.set_window_size(1440,900)
-  driver.set_window_position(0,0)
-  return driver
-
-
 def loginTest(username, password, outputlog = True, tweet = None):
   # re-route output
   orig_stdout = sys.stdout
@@ -71,7 +58,7 @@ def loginTest(username, password, outputlog = True, tweet = None):
 
   # loop through all username/password combinations
   for idx in range(len(username)):
-    driver = getDriver()
+    driver = getDriver('chrome')
     print "--------------------------------------------------------------"
     print "#%s ID:%s" % (idx+1, username[idx])
     # just in case network connection is broken 
