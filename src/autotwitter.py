@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from datetime import datetime
 import sys
 import time
-from helper import loadConfig, twitterLogIn, twitterLogOut, genRandomText, getDriver
+from helper import loadConfig, twitterLogIn, twitterLogOut, getDriver
 
 website = "https://twitter.com/download?logged_out=1&lang=en"
 
@@ -24,6 +24,13 @@ def skipAddPhoneNumber(driver):
 
 def clickOnNotifications(driver):
   driver.find_element_by_class_name("people notifications").click()
+
+
+def clickOnBanner(driver):
+  try:
+    driver.find_element_by_class_name("EdgeButton EdgeButton--primary js-promptAction").click()
+  except:
+    pass
 
 
 def sendTweet(driver, text):
@@ -85,6 +92,7 @@ def loginTest(username, password, outputlog = True, tweet = None):
 
     time.sleep(2)
     skipAddPhoneNumber(driver)
+    clickOnBanner(driver)
     time.sleep(1)
 
     # main program
@@ -116,7 +124,7 @@ def loginTest(username, password, outputlog = True, tweet = None):
 
     if not tweet is None:
       try:
-        sendTweet(driver, genRandomText() + ' ' + tweet)
+        sendTweet(driver, tweet)
         time.sleep(1)
       except:
         print "can't send tweet"
