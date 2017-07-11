@@ -37,7 +37,11 @@ def sendTweet(driver, text):
   driver.find_element_by_id("global-new-tweet-button").click()
   time.sleep(1)
   WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id("tweet-box-global")).send_keys(text)
-  driver.find_elements_by_class_name("Icon--tweet")[2].click()
+  for element in driver.find_elements_by_class_name("tweet-action"):
+    try:
+      element.click()
+    except:
+      pass
   print("Send tweet OK [%s]" % text)
   time.sleep(1)
 
