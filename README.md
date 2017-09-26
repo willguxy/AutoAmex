@@ -1,22 +1,30 @@
-# How does it work?
-- Clone this repo to your local directory
+# Docker
+- Now auto_amex has a `Dockerfile`. Suppose you have docker set up on your machine
+- You can use `make build` to build a docker image
+- Use `make run` to run the process with phantomjs
+
+# Chromedriver
+- `chromedriver` has been removed form this repo
+- If you need to use legacy mode, please download your own chromedriver and put it under `src`
+
+# Add your configuration
 - Add your own config file under the `conf` folder. Name it as `config.csv`
-- The `config.csv` should follow `your_amex_log_in_id`,`your_password` each line. Add however many lines as you want
-- Run `python autoamex.py chrome` or `python autoamex.py phantomjs` if you choose to set up your local environment
-- Otherwise, just run `docker-start.sh` on Linux or Mac.
+- The `config.csv` should follow `your_amex_log_in_id,your_password` each line. Add however many lines as you want
+
+# Running the program
+- Use docker and make, or
+- Run on host machine `python autoamex.py chrome` or `python autoamex.py phantomjs`
+- Need to install `selenium` for python
+- User either downloaded `chromedriver` or installed `phantomjs`
+- as mentioned above, `chromedriver` needs to be under `src`
+- `phantomjs` needs to be under `$PATH`
 
 # Important Note
-You are supposed to have one online account per card. This program doesn't work with multiple cards under the same log-in. It lacks reliablility if we go that way -- once it fails for some cards but succeed for others, you would need to go through a lot of hassle to get those offer reappear under your account.
+- one card per each online account
+- this program doesn't work with multiple cards under the same account
+- nor does it use multi-tab tricks (it's not robust and only causes more surprises)
 
-# Docker compatiblility
-- You need to first set up your Docker environment on your local machine
-- I used exisiting public image on Docker hub, but it could go obsolete. I'll update when I build and upload my own
-- Linux users, just run `./docker-start.sh`
-- (I would need to figure something out for Windows users)
-- The folder is mounted, so the log files would appear in your local dir as well
-- Note the time stamp of those log files would be UTC instead
-
-# Docker for Windows users
+# Docker for Windows users (probably incomplete since I never ran docker on Windoes)
 - Check there installation guide for Windows 10 at https://docs.docker.com/docker-for-windows/
 - If you are using older versions, please use Docker Toolbox https://docs.docker.com/toolbox/overview/
 - It would install both Git and VirtualBox to your computer as well
@@ -29,7 +37,7 @@ You are supposed to have one online account per card. This program doesn't work 
 - Go to the repo folder and run `./docker-start.sh`
 - Setting jobs on Windows is left out for now. You would need to do your own research to find out how it's done with Docker on Windows
 
-# AutoTwitter
+# AutoTwitter (probably not working properly)
 - OffersBot has stopped updating their twitter account. You'd now need to parse the RSS feed from their website
 - I haven't found any free RSS-to-Twiter tools online. TwitterFeed used to be the one, but it's gone now
 - Alternative to the approach provided here, you can pay some fee and use other services, or build your own cloud machine that does this job
@@ -37,5 +45,5 @@ You are supposed to have one online account per card. This program doesn't work 
 - `AutoTwitter.py` is also self-contained in that you can pass command line argument to it, and it will pusblish whatever you pass in
 - Everything else stays the same. I haven't tested the balace checker so this one might not work very well now.
 
-# Other stuff
+# Other stuff (not working either)
 - AutoAmexAllOffers: retrieves all added offers across all accounts and lay them down in a csv file
