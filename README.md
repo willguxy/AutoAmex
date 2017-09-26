@@ -24,7 +24,7 @@
 - this program doesn't work with multiple cards under the same account
 - nor does it use multi-tab tricks (it's not robust and only causes more surprises)
 
-# Docker for Windows users (probably incomplete since I never ran docker on Windoes)
+# Docker for Windows users (probably incomplete since I never ran docker on Windows)
 - Check there installation guide for Windows 10 at https://docs.docker.com/docker-for-windows/
 - If you are using older versions, please use Docker Toolbox https://docs.docker.com/toolbox/overview/
 - It would install both Git and VirtualBox to your computer as well
