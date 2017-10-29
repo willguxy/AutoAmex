@@ -1,11 +1,12 @@
-FROM python:2-stretch
+FROM python:2.7-stretch
 
 # install phantomjs
 RUN apt-get update \
   && apt-get upgrade -yqf \
-  && apt-get install -yq build-essential chrpath libssl-dev libxft-dev \
-  && apt-get install -yq libfreetype6 libfreetype6-dev \
-  && apt-get install -yq libfontconfig1 libfontconfig1-dev
+  && apt-get install -yqq build-essential chrpath libssl-dev libxft-dev \
+  && apt-get install -yqq libfreetype6 libfreetype6-dev \
+  && apt-get install -yqq libfontconfig1 libfontconfig1-dev \
+  && apt-get autoremove -yqq
 RUN cd /tmp \
   && export PHANTOM_JS="phantomjs-2.1.1-linux-x86_64" \
   && curl -L https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2 -o phantomjs.tar.bz2 \
@@ -18,12 +19,11 @@ RUN cd /tmp \
 # update pip and install python packages
 RUN pip install pip -U --no-cache \
   && pip list --outdated | awk '{print $1}' | xargs pip install -U --no-cache
-WORKDIR /usr/src/app
-ADD requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-RUN mkdir ./autoamex
-#ADD . .
+ADD requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-#RUN cd src
-#CMD [ "python", "autoamex.py", "headless" ]
+# adding files
+RUN mkdir -p /app/autoamex
+ADD src/ /app/autoamex/src
+WORKDIR /app/autoamex/src
 
