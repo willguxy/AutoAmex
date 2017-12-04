@@ -69,12 +69,13 @@ def getAddedOffers(cred, browser = "Chrome"):
   offer_df = {k: ['+' if x in v else '' for x in username] for k, v in offer_map.iteritems()}
   offer_df = pd.DataFrame(offer_df)
   cols = offer_df.columns.tolist()
-  cols.sort(key=lambda x: (datetime.strptime(x.split(',')[0], '%m/%d/%Y'), x.spit(',')[2]))
+  cols.sort(key=lambda x: (datetime.strptime(x.split(',')[0].strip(), '%m/%d/%Y'), 
+    x.split(',')[2].strip()))
   offer_df = offer_df[cols]
   offer_df.index = username
-  info_rows = pd.DataFrame([[offer_key_desc[x], x.split(', ')[0]] for x in cols]).T
+  info_rows = pd.DataFrame([[offer_key_desc[x], x.split(',')[0].strip()] for x in cols]).T
   info_rows.index = ['_description', '_expiration']
-  colnames = [x.split(', ')[2] for x in cols]
+  colnames = [x.split(',')[2].strip() for x in cols]
   info_rows.columns = offer_df.columns = colnames
   res = pd.concat([info_rows, offer_df])
 
