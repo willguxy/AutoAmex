@@ -7,83 +7,36 @@ from helper import loadConfig, closeFeedback, clickOnOffers, amexLogIn, \
 
 amex_url = 'https://global.americanexpress.com/offers/eligible'
 
-def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
-  orig_stdout = sys.stdout # re-route output
-  logfile = None
-  if outputlog:
-    # use current time in log file name
-    logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
-    logfilename = logfilename.replace(':', '_') + ".log"
-    logfile = open('../tmp/' + logfilename, 'w+')
-    sys.stdout = logfile
-
-  # input error handle
-  if username == [] or password == [] or len(username) != len(password):
-    print("username array does not have the same length as password array...")
-    # close log file
-    if outputlog:
-      sys.stdout = orig_stdout
-      logfile.close()
-    return
-
-  driver = getDriver(browser)
-  begintime  = time.time()
-
-  # loop through all username/password combinations
-  for idx in range(len(username)):
-    eachbegintime = time.time()
-    print("--------------------------------------------------------------")
-    print("#", idx+1, "ID:", username[idx])
-    # just in case network connection is broken
-    try: driver.get(amex_url)
-    except:
-      print("website is not available...")
-      if outputlog:
-        sys.stdout = orig_stdout
-        logfile.close() # close log file
-      return
-
-    # fill and submit login form
-    try: amexLogIn(driver, username[idx], password[idx], 'eliloUserID', 'eliloPassword')
-    except:
-      print("Something is wrong with login")
-      continue # end current loop
-
-    closeFeedback(driver) # just in case the feedback banner appears
-
-    # store offer names and click on offers
-    offernames = collectOfferNames(driver)
-    print("Available offers are: {}".format(offernames))
-    if not offernames == '': clickOnOffers(driver)
-    try:  amexLogOut(driver)
-    except: pass
-    time.sleep(1)
-
-    eachendtime = time.time()
-    print("Time used: %0.2f seconds" % (eachendtime - eachbegintime))
-    print("--------------------------------------------------------------")
-
-  endtime = time.time()
-  # print summary
-  print("--------------------------------------------------------------")
-  print("** Summary **")
-  print("Total time used: %0.2f seconds" % (endtime - begintime))
-  print("--------------------------------------------------------------")
-
-  # close log file
-  if outputlog:
-    sys.stdout = orig_stdout
-    logfile.close()
-  # close browser
-  driver.quit()
-
+def loginTest(cred, browser = "PhantomJS"):
+  logfilename = datetime.strftime(datetime.now(), '%Y-%m-%d %H_%M_%S') + '.log'
+  with open('../tmp/' + logfilename, 'w+') as f:
+    sys.stdout = f 
+    driver = getDriver(browser)
+    i, t0  = 1, time.time()
+    for login_pair in cred:
+      t = time.time()
+      print("# {0} ID: {1}".format(i, login_pair[0]))
+      try:
+        driver.get(amex_url)
+        amexLogIn(driver, login_pair[0], login_pair[1], 'eliloUserID', 'eliloPassword')
+      except:
+        print("Something is wrong with login")
+        continue
+      closeFeedback(driver) 
+      offer_names = collectOfferNames(driver)
+      print("Available offers are: {}".format(offer_names))
+      if offer_names: clickOnOffers(driver)
+      try: amexLogOut(driver)
+      except: pass
+      time.sleep(1)
+      print("Time used: %0.1f seconds\n" % (time.time() - t))
+      i += 1
+    driver.quit()
+    print("** Summary **\nTotal time used: %0.1f seconds" % (time.time() - t0))
 
 def main(argv):
-  browser = 'Chrome'
-  if len(argv) >= 1:
-    browser = argv[0]
-  username, password = loadConfig("../conf/config.csv")
-  loginTest(username, password, outputlog=True, browser=browser)
+  browser = argv[0] if len(argv) >= 1 else 'Chrome'
+  loginTest(loadConfig("../conf/config.csv"), browser=browser)
 
 if __name__ == '__main__':
   main(sys.argv[1:])

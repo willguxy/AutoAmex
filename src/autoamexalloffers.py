@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys, time, re
 import pandas as pd
-from selenium import webdriver
 from datetime import datetime, timedelta
 from helper import loadConfig, closeFeedback, amexLogIn, amexLogOut, getDriver
 
@@ -16,37 +15,29 @@ def get_date(x):
     return re.match(r'expires\n(.*)', x).group(1)
 
 
-def getAddedOffers(username, password, browser = "Chrome"):
-  if username == [] or password == [] or len(username) != len(password):
-    print("username array does not have the same length as password array...")
-    return
+def getAddedOffers(cred, browser = "Chrome"):
   offer_map = {}
-
+  username = [x[0] for x in cred]
   driver = getDriver(browser)
-  for idx in range(len(username)):
-    try: driver.get(amex_url)
+  for login_pair in cred:
+    try:
+      driver.get(amex_url)
+      amexLogIn(driver, login_pair[0], login_pair[1], 'eliloUserID', 'eliloPassword')
     except:
-      print("website is not available...")
-      #return
-    try: amexLogIn(driver, username[idx], password[idx], 'eliloUserID', 'eliloPassword')
-    except:
-      print("username/password combination is incorrect...")
+      print("login error")
       continue
-    time.sleep(2)
     closeFeedback(driver)
-    # get expiration dates
     offer_expires = [o.text.encode('utf-8').lower() 
       for o in driver.find_elements_by_class_name("offer-expires")]
     offer_expires = [get_date(o) for o in offer_expires]
-    # get description and merchant name
     offer_info = [offer.text.encode('utf-8').replace(',', ' and')
       for offer in driver.find_elements_by_class_name("offer-info")]
     offer_info = [', '.join(text.split('\n')) for text in offer_info]
     offer_key = [', '.join(x) for x in zip(offer_expires, offer_info)]
 
     for k in offer_key:
-      if k in offer_map: offer_map[k].append(username[idx])
-      else: offer_map[k] = [username[idx]]
+      if k in offer_map: offer_map[k].append(login_pair[0])
+      else: offer_map[k] = [login_pair[0]]
     time.sleep(1)
     try: amexLogOut(driver)
     except: pass
@@ -69,11 +60,11 @@ def getAddedOffers(username, password, browser = "Chrome"):
   res.to_csv('../tmp/' + file_name, sep=',', encoding='utf-8')
 
 
-def main():
-  username, password = loadConfig("../conf/config.csv")
-  getAddedOffers(username, password)
+def main(argv):
+  browser = argv[0] if len(argv) >= 1 else 'Chrome'
+  getAddedOffers(loadConfig("../conf/config.csv"), browser=browser)
 
 if __name__ == '__main__':
-  main()
+  main(sys.argv[1:])
 
 

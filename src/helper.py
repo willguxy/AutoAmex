@@ -49,21 +49,11 @@ def getDriver(browser):
 
 
 def loadConfig(filename):
-  ''' load your config.csv file
-    the file should contain username, password in each line
-    make sure the file is under the same directory '''
-  username = []
-  password = []
-  try:
-    f = open(filename, 'rb')
+  res = []
+  with open(filename, 'rb') as f:
     reader = csv.reader(f)
-    for row in reader:
-      username.append(row[0])
-      password.append(row[1])
-    f.close()
-  except:
-    print "file read failed..."
-  return username, password
+    for row in reader: res.append(row)
+  return res
 
 
 def closeFeedback(driver):
