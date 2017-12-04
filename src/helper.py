@@ -1,22 +1,16 @@
-# helper files for amex automation
-
+import csv, time, string
+from random import choice
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-import csv
-import time
-from random import choice
-import string
 
-# TODO: Add these websites to actions
-# Only working on the new GUI
-offer_page = "https://global.americanexpress.com/offers/eligible"
-added_page = "https://global.americanexpress.com/offers/enrolled"
 
 def GenPasswd2(length=8, chars=string.letters + string.digits):
   return ''.join([choice(chars) for i in range(length)])
 
+
 def genRandomText():
   return GenPasswd2(8,string.digits) + GenPasswd2(15,string.ascii_letters)
+
 
 def collectOfferNames(driver):
   tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Add to Card') \
@@ -66,38 +60,6 @@ def closeFeedback(driver):
       pass
 
 
-def clickOnViewMore(driver):
-  driver.execute_script("window.scrollBy(0, 2250);") #scroll down
-  # click on view more if available
-  try:
-    driver.find_element_by_xpath("//*[contains(text(), 'View More')]").click()
-  except:
-    for i in range(3):
-      try:
-        driver.find_element_by_xpath("//*[contains(text(), 'View All')]")[1].click()
-        time.sleep(2)
-        return
-      except:
-        driver.execute_script("window.scrollBy(0, -250);") # scroll up
-        pass
-  time.sleep(2)
-
-
-# click on Added to Card
-def clickOnAddedToCard(driver):
-  driver.execute_script("window.scrollBy(0, 2250);") # scroll down
-  flag = True
-  while flag:
-    try:
-      driver.find_element_by_xpath("//*[contains(text(), 'Added to Card')]").click()
-      time.sleep(1)
-      flag = False
-    except:
-      driver.execute_script("window.scrollBy(0, -150);")
-      time.sleep(1)
-      continue
-
-
 def clickOnOffers(driver):
   for t in range(3):
     if collectOfferNames(driver) == '': return
@@ -111,32 +73,19 @@ def clickOnOffers(driver):
       time.sleep(1)
 
 
-def clickOnLoadMore(driver):
-  driver.execute_script("window.scrollBy(0, 2250);") # scroll down
-  # click on 'load more'
-  try:
-    driver.find_element_by_xpath("//*[contains(text(), 'Load More')]").click()
-  except:
-    for i in range(3):
-      try:
-        driver.find_elements_by_xpath("//*[contains(text(), 'View All')]")[5].click()
-        time.sleep(2)
-        return
-      except:
-        driver.execute_script("window.scrollBy(0, -250);") # scroll up
-        pass
-  time.sleep(2)
-
-
 def amexLogIn(driver, usr, pwd, emailFieldID='lilo_userName', passFieldID='lilo_password'):
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(emailFieldID)).clear()
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(emailFieldID)).send_keys(usr)
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(passFieldID)).clear()
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(passFieldID)).send_keys(pwd)
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_id(emailFieldID)).clear()
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_id(emailFieldID)).send_keys(usr)
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_id(passFieldID)).clear()
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_id(passFieldID)).send_keys(pwd)
   for e in driver.find_elements_by_xpath('//*[@type="submit"]'):
     try: e.click()
     except: pass
-  time.sleep(3)
+  time.sleep(1)
 
 
 def amexLogOut(driver):
@@ -150,17 +99,23 @@ def twitterLogIn(driver, usr, pwd):
   loginBtnClass = "submit"
   emailField = "session[username_or_email]"
   pwdField = "session[password]"
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(signInLinkID)).click()
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_name(emailField)).send_keys(usr)
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_name(pwdField)).send_keys(pwd)
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_class_name(loginBtnClass)).click()
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_id(signInLinkID)).click()
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_name(emailField)).send_keys(usr)
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_name(pwdField)).send_keys(pwd)
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_class_name(loginBtnClass)).click()
 
 
 def twitterLogOut(driver):
   userDropdownID = "user-dropdown-toggle"
   signOutBtn = "js-signout-button"
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(userDropdownID)).click()
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_class_name(signOutBtn)).click()
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_id(userDropdownID)).click()
+  WebDriverWait(driver, 10).until(lambda driver:
+    driver.find_element_by_class_name(signOutBtn)).click()
 
 
 
