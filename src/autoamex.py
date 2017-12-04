@@ -1,10 +1,9 @@
 #!/usr/bin/env python
+import sys, time
 from selenium import webdriver
 from datetime import datetime
-import sys
-import time
-from helper import loadConfig, closeFeedback, clickOnViewMore, clickOnOffers, amexLogIn, \
-  amexLogOut, clickOnLoadMore, getDriver, collectOfferNames
+from helper import loadConfig, closeFeedback, clickOnOffers, amexLogIn, \
+  amexLogOut, getDriver, collectOfferNames
 
 amex_url = 'https://global.americanexpress.com/offers/eligible'
 
@@ -36,8 +35,7 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
     print("--------------------------------------------------------------")
     print("#", idx+1, "ID:", username[idx])
     # just in case network connection is broken
-    try:
-      driver.get(amex_url)
+    try: driver.get(amex_url)
     except:
       print("website is not available...")
       if outputlog:
@@ -46,8 +44,7 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
       return
 
     # fill and submit login form
-    try:
-      amexLogIn(driver, username[idx], password[idx], 'eliloUserID', 'eliloPassword')
+    try: amexLogIn(driver, username[idx], password[idx], 'eliloUserID', 'eliloPassword')
     except:
       print("Something is wrong with login")
       continue # end current loop
@@ -56,16 +53,10 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
 
     # store offer names and click on offers
     offernames = collectOfferNames(driver)
-    print("Available offers are:", offernames)
-    if not offernames == '':
-      clickOnOffers(driver)
-    time.sleep(1)
-
-    # logout
-    try:
-      amexLogOut(driver)
-    except:
-      pass # pass would be fine, since the launch of the url is the log-in page no matter what
+    print("Available offers are: {}".format(offernames))
+    if not offernames == '': clickOnOffers(driver)
+    try:  amexLogOut(driver)
+    except: pass
     time.sleep(1)
 
     eachendtime = time.time()

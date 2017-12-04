@@ -74,7 +74,6 @@ def closeFeedback(driver):
       driver.find_element_by_class_name("fsrCloseBtn").click()
     except:
       pass
-  time.sleep(1)
 
 
 def clickOnViewMore(driver):
@@ -111,30 +110,15 @@ def clickOnAddedToCard(driver):
 
 def clickOnOffers(driver):
   for t in range(3):
-    if collectOfferNames(driver) == '':
-      # print "All offers added"
-      return
-    time.sleep(1)
-    try:
-      driver.execute_script("javascript:$('.ah-card-offer-add-to-card').each(function(i){$(this).click();});")
-    except:
-      pass
-    try:
-      driver.execute_script("javascript:$('.ah-Add-to-card').each(function(i){$(this).click();});")
-    except:
-      pass
+    if collectOfferNames(driver) == '': return
     for e in driver.find_elements_by_xpath('//*[@title="Add to Card"]') + \
             driver.find_elements_by_xpath('//*[@title="Save Promo Code"]'):
-      try:
-        e.click()
-        time.sleep(1)
-      except:
-        pass
-    time.sleep(1)
+      try: e.click()
+      except: pass
+      time.sleep(1)
     if t != 2:
       driver.refresh() # refresh the page
       time.sleep(1)
-      clickOnLoadMore(driver)
 
 
 def clickOnLoadMore(driver):
