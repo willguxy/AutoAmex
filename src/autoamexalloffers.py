@@ -27,6 +27,7 @@ def get_date(x):
 
 def getAddedOffers(cred, browser = "Chrome"):
   offer_map = {}
+  offer_key_desc = {}
   username = [x[0] for x in cred]
   driver = getDriver(browser)
   for login_pair in cred:
@@ -42,25 +43,36 @@ def getAddedOffers(cred, browser = "Chrome"):
     offer_expires = [o.text.encode('utf-8').lower() 
       for o in driver.find_elements_by_class_name("offer-expires")]
     offer_expires = [get_date(o) for o in offer_expires]
-    offer_info = [offer.text.encode('utf-8').replace(',', ' and')
+    offer_info = [offer.text.encode('ascii', errors='ignore').encode('utf-8')
       for offer in driver.find_elements_by_class_name("offer-info")]
-    offer_info = [', '.join(text.split('\n')) for text in offer_info]
-    offer_key = [', '.join(x) for x in zip(offer_expires, offer_info)]
+    offer_info = [o.replace(', get', ' and get') for o in offer_info]
+    # filter out things don't start with 'Spend'
+    offer_expires = [offer_expires[i] for i in range(len(offer_expires)) 
+      if offer_info[i].startswith('Spend')]
+    offer_info = [o for o in offer_info if o.startswith('Spend')]
+    offer_info = [o.split('\n') for o in offer_info]
+    offer_desc = [o[0] for o in offer_info]
+    offer_info = [','.join([re.findall(r'Spend \$(\d+)', o[0])[0], o[1]]) for o in offer_info]
+    offer_key = [','.join(x) for x in zip(offer_expires, offer_info)]
     for k in offer_key:
       if k in offer_map: offer_map[k].append(login_pair[0])
       else: offer_map[k] = [login_pair[0]]
+    for i in range(len(offer_key)):
+      if offer_key[i] in offer_key_desc: offer_key_desc[offer_key[i]].update([offer_desc[i]])
+      else: offer_key_desc[offer_key[i]] = set([offer_desc[i]])
     while not driver.find_elements_by_id('eliloUserID'):
       try: amexLogOut(driver)
       except: pass
   driver.quit()
+  offer_key_desc = {k: ' OR '.join(v) for k, v in offer_key_desc.iteritems()}
 
   offer_df = {k: ['+' if x in v else '' for x in username] for k, v in offer_map.iteritems()}
   offer_df = pd.DataFrame(offer_df)
   cols = offer_df.columns.tolist()
-  cols.sort(key=lambda x: datetime.strptime(x.split(',')[0], '%m/%d/%Y'))
+  cols.sort(key=lambda x: (datetime.strptime(x.split(',')[0], '%m/%d/%Y'), x.spit(',')[2]))
   offer_df = offer_df[cols]
   offer_df.index = username
-  info_rows = pd.DataFrame([x.split(', ')[1::-1] for x in cols]).T
+  info_rows = pd.DataFrame([[offer_key_desc[x], x.split(', ')[0]] for x in cols]).T
   info_rows.index = ['_description', '_expiration']
   colnames = [x.split(', ')[2] for x in cols]
   info_rows.columns = offer_df.columns = colnames
