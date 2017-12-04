@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from selenium import webdriver
 from datetime import datetime
 import sys
@@ -7,7 +6,7 @@ import time
 from helper import loadConfig, closeFeedback, clickOnViewMore, clickOnOffers, amexLogIn, \
   amexLogOut, clickOnLoadMore, getDriver, collectOfferNames
 
-amexWebsite = "https://online.americanexpress.com/myca/logon/us/action/LogonHandler?request_type=LogonHandler&Face=en_US&inav=iNavLnkLog"
+amex_url = 'https://global.americanexpress.com/offers/eligible'
 
 def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
   orig_stdout = sys.stdout # re-route output
@@ -21,7 +20,7 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
 
   # input error handle
   if username == [] or password == [] or len(username) != len(password):
-    print "username array does not have the same length as password array..."
+    print("username array does not have the same length as password array...")
     # close log file
     if outputlog:
       sys.stdout = orig_stdout
@@ -34,13 +33,13 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
   # loop through all username/password combinations
   for idx in range(len(username)):
     eachbegintime = time.time()
-    print "--------------------------------------------------------------"
-    print "#", idx+1, "ID:", username[idx]
+    print("--------------------------------------------------------------")
+    print("#", idx+1, "ID:", username[idx])
     # just in case network connection is broken
     try:
-      driver.get(amexWebsite)
+      driver.get(amex_url)
     except:
-      print "website is not available..."
+      print("website is not available...")
       if outputlog:
         sys.stdout = orig_stdout
         logfile.close() # close log file
@@ -48,17 +47,16 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
 
     # fill and submit login form
     try:
-      amexLogIn(driver, username[idx], password[idx])
+      amexLogIn(driver, username[idx], password[idx], 'eliloUserID', 'eliloPassword')
     except:
-      print "Something is wrong with login"
+      print("Something is wrong with login")
       continue # end current loop
 
     closeFeedback(driver) # just in case the feedback banner appears
-    clickOnLoadMore(driver) # scroll down and click load more
 
     # store offer names and click on offers
     offernames = collectOfferNames(driver)
-    print "Available offers are:", offernames
+    print("Available offers are:", offernames)
     if not offernames == '':
       clickOnOffers(driver)
     time.sleep(1)
@@ -71,15 +69,15 @@ def loginTest(username, password, outputlog = True, browser = "PhantomJS"):
     time.sleep(1)
 
     eachendtime = time.time()
-    print "Time used: %0.2f seconds" % (eachendtime - eachbegintime)
-    print "--------------------------------------------------------------"
+    print("Time used: %0.2f seconds" % (eachendtime - eachbegintime))
+    print("--------------------------------------------------------------")
 
   endtime = time.time()
   # print summary
-  print "--------------------------------------------------------------"
-  print "** Summary **"
-  print "Total time used: %0.2f seconds" % (endtime - begintime)
-  print "--------------------------------------------------------------"
+  print("--------------------------------------------------------------")
+  print("** Summary **")
+  print("Total time used: %0.2f seconds" % (endtime - begintime))
+  print("--------------------------------------------------------------")
 
   # close log file
   if outputlog:

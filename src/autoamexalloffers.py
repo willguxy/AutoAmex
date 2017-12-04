@@ -3,11 +3,9 @@ import sys, time, re
 import pandas as pd
 from selenium import webdriver
 from datetime import datetime, timedelta
-from helper import loadConfig, closeFeedback, clickOnAddedToCard, \
-  clickOnLoadMore, amexLogIn, amexLogOut, getDriver
+from helper import loadConfig, closeFeedback, amexLogIn, amexLogOut, getDriver
 
-amex_url = "https://online.americanexpress.com/myca/logon/us/action/LogonHandler?request_type=LogonHandler&Face=en_US&inav=iNavLnkLog"
-
+amex_url = 'https://global.americanexpress.com/offers/enrolled'
 
 def get_date(x):
   if x.endswith('days'):
@@ -30,14 +28,10 @@ def getAddedOffers(username, password, browser = "Chrome"):
     except:
       print("website is not available...")
       #return
-    try: amexLogIn(driver, username[idx], password[idx])
+    try: amexLogIn(driver, username[idx], password[idx], 'eliloUserID', 'eliloPassword')
     except:
       print("username/password combination is incorrect...")
       continue
-    time.sleep(2)
-    closeFeedback(driver)
-    clickOnAddedToCard(driver)
-    clickOnLoadMore(driver)
     time.sleep(2)
     closeFeedback(driver)
     # get expiration dates
@@ -77,6 +71,7 @@ def getAddedOffers(username, password, browser = "Chrome"):
 
 def main():
   username, password = loadConfig("../conf/config.csv")
+  username, password = username[:4], password[:4]
   getAddedOffers(username, password)
 
 if __name__ == '__main__':

@@ -154,22 +154,21 @@ def clickOnLoadMore(driver):
   time.sleep(2)
 
 
-def amexLogIn(driver, usr, pwd):
-  emailFieldID = "lilo_userName"
-  passFieldID = "lilo_password"
-  loginBtnID= "lilo_formSubmit"
-  viewMoreBtn = "ah-view-more-button"
+def amexLogIn(driver, usr, pwd, emailFieldID='lilo_userName', passFieldID='lilo_password'):
   WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(emailFieldID)).clear()
   WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(emailFieldID)).send_keys(usr)
   WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(passFieldID)).clear()
   WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(passFieldID)).send_keys(pwd)
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id(loginBtnID)).click()
+  for e in driver.find_elements_by_xpath('//*[@type="submit"]'):
+    try: e.click()
+    except: pass
   time.sleep(3)
 
 
 def amexLogOut(driver):
-  logoutBtnID = "iNavLogOutButton"
-  WebDriverWait(driver, 3).until(lambda driver: find_elements_by_xpath("//*[contains(text(), 'Log Out')]")).click()
+  for e in driver.find_elements_by_xpath('//*[@tabindex="0" and @accesskey="4"]'):
+    try: e.click()
+    except: pass
 
 
 def twitterLogIn(driver, usr, pwd):
