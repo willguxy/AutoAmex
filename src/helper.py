@@ -148,7 +148,7 @@ def clickOnOffers(driver):
             driver.find_elements_by_xpath('//*[@title="Save Promo Code"]'):
       try:
         e.click()
-        time.sleep(0.5)
+        time.sleep(1)
       except:
         pass
     time.sleep(1)
