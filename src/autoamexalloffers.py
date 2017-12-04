@@ -77,7 +77,7 @@ def getAddedOffers(username, password, browser = "Chrome"):
 
 def main():
   username, password = loadConfig("../conf/config.csv")
-  getAddedOffers(username, password, outputlog = True)
+  getAddedOffers(username, password)
 
 if __name__ == '__main__':
   main()
