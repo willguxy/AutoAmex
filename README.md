@@ -9,15 +9,14 @@
 
 # Add your configuration
 - Add your own config file under the `conf` folder. Name it as `config.csv`
-- The `config.csv` should follow `your_amex_log_in_id,your_password` each line. Add however many lines as you want
+- The `config.csv` should follow `your_login,your_password` each line. Add however many lines as you want. you don't headers for the csv.
 
 # Running the program
 - Use docker and make, or
 - Run on host machine `python autoamex.py chrome` or `python autoamex.py phantomjs`
-- Need to install `selenium` for python
-- User either downloaded `chromedriver` or installed `phantomjs`
-- as mentioned above, `chromedriver` needs to be under `src`
-- `phantomjs` needs to be under `$PATH`
+- Need to install modules for python using `requirements.txt`
+- install `chromedriver` or `phantomjs` depend on how you want to run it (recommend `chrome` for first-time users, so that you can see how it works)
+- Note that `chromedriver` needs to be under `src` and `phantomjs` needs to be under `$PATH`
 
 # Important Note
 - one card per each online account
