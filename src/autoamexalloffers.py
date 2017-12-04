@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import sys, time, re
+import sys, time, re, logging
 import pandas as pd
 from datetime import datetime, timedelta
 from helper import loadConfig, closeFeedback, amexLogIn, amexLogOut, getDriver
-
+logger = logging.getLogger(__name__)
+logging.basicConfig()
 amex_url = 'https://global.americanexpress.com/offers/enrolled'
 
 def get_date(x):
@@ -11,8 +12,17 @@ def get_date(x):
     day_offset = int(re.match(r'expires in (\d+) days', x).group(1))
     d = datetime.today() + timedelta(day_offset)
     return d.strftime('%m/%d/%Y')
+  elif x.endswith('today'):
+    return datetime.today().strftime('%m/%d/%Y')
+  elif x.endswith('tomorrow'):
+    d = datetime.today() + timedelta(1)
+    return d.strftime('%m/%d/%Y')
   else:
-    return re.match(r'expires\n(.*)', x).group(1)
+    m = re.match(r'expires\n(.*)', x)
+    if m: return m.group(1)
+    else:
+      logger.warning('{} cannot be processed'.format(x))
+      return datetime.today().strftime('%m/%d/%Y')
 
 
 def getAddedOffers(cred, browser = "Chrome"):
@@ -26,6 +36,8 @@ def getAddedOffers(cred, browser = "Chrome"):
     except:
       print("login error")
       continue
+    time.sleep(1)
+    while not driver.find_elements_by_class_name("offer-expires"): time.sleep(1)
     closeFeedback(driver)
     offer_expires = [o.text.encode('utf-8').lower() 
       for o in driver.find_elements_by_class_name("offer-expires")]
@@ -34,14 +46,12 @@ def getAddedOffers(cred, browser = "Chrome"):
       for offer in driver.find_elements_by_class_name("offer-info")]
     offer_info = [', '.join(text.split('\n')) for text in offer_info]
     offer_key = [', '.join(x) for x in zip(offer_expires, offer_info)]
-
     for k in offer_key:
       if k in offer_map: offer_map[k].append(login_pair[0])
       else: offer_map[k] = [login_pair[0]]
-    time.sleep(1)
-    try: amexLogOut(driver)
-    except: pass
-    time.sleep(1)
+    while not driver.find_elements_by_id('eliloUserID'):
+      try: amexLogOut(driver)
+      except: pass
   driver.quit()
 
   offer_df = {k: ['+' if x in v else '' for x in username] for k, v in offer_map.iteritems()}

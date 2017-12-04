@@ -62,14 +62,14 @@ def closeFeedback(driver):
 
 def clickOnOffers(driver):
   for t in range(3):
-    if collectOfferNames(driver) == '': return
+    if not collectOfferNames(driver): return
     for e in driver.find_elements_by_xpath('//*[@title="Add to Card"]') + \
             driver.find_elements_by_xpath('//*[@title="Save Promo Code"]'):
       try: e.click()
       except: pass
       time.sleep(1)
     if t != 2:
-      driver.refresh() # refresh the page
+      driver.refresh()
       time.sleep(1)
 
 
@@ -89,9 +89,10 @@ def amexLogIn(driver, usr, pwd, emailFieldID='lilo_userName', passFieldID='lilo_
 
 
 def amexLogOut(driver):
-  for e in driver.find_elements_by_xpath('//*[@tabindex="0" and @accesskey="4"]'):
-    try: e.click()
+  while driver.find_elements_by_xpath('//*[@tabindex="0" and @accesskey="4"]'):
+    try: driver.find_element_by_xpath('//*[@tabindex="0" and @accesskey="4"]').click()
     except: pass
+    time.sleep(1)
 
 
 def twitterLogIn(driver, usr, pwd):
