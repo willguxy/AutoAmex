@@ -3,6 +3,5 @@
 *.csv
 *.log
 *.json
-*.txt
 *.xlsx
 chromedriver*
