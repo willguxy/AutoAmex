@@ -45,7 +45,7 @@ def getAddedOffers(cred, browser = "Chrome"):
     offer_expires = [get_date(o) for o in offer_expires]
     offer_info = [offer.text.encode('ascii', errors='ignore').encode('utf-8')
       for offer in driver.find_elements_by_class_name("offer-info")]
-    offer_info = [o.replace(', get', ' and get') for o in offer_info]
+    offer_info = [o.replace(', get', ' and get').replace(',', '') for o in offer_info]
     # filter out things don't start with 'Spend'
     offer_expires = [offer_expires[i] for i in range(len(offer_expires)) 
       if offer_info[i].startswith('Spend')]
