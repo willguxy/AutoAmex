@@ -20,7 +20,7 @@ def collectOfferNames(driver):
   tmpnames = [n.text.encode('utf-8') for n in tmpoffernames]
   tmpnames = filter(None, tmpnames)
   tmpnames = [n.split('\n')[1] if '\n' in n else n for n in tmpnames]
-  offernames = ', '.join(tmpnames)
+  offernames = ', '.join(sorted(tmpnames))
   return offernames
 
 
