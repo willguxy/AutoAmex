@@ -23,7 +23,7 @@ def loginTest(cred, browser="PhantomJS"):
       except:
         print("Something is wrong with login\n")
         continue
-      time.sleep(1)
+      time.sleep(2)
       closeFeedback(driver)
       offer_names = collectOfferNames(driver)
       print("Available offers are: {}".format(offer_names))
