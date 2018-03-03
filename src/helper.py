@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def GenPasswd2(length=8, chars=string.letters + string.digits):
+def GenPasswd2(length=8, chars=string.ascii_letters + string.digits):
   return ''.join([choice(chars) for i in range(length)])
 
 
@@ -37,14 +37,14 @@ def getDriver(browser):
   elif browser.lower() in ('phantomjs', 'headless'):
     driver = webdriver.PhantomJS()
   else:
-    print "WARNING: browser selection not valid, use PhantomJS as default"
+    print("WARNING: browser selection not valid, use PhantomJS as default")
     driver = webdriver.PhantomJS()
   return driver
 
 
 def loadConfig(filename):
   res = []
-  with open(filename, 'rb') as f:
+  with open(filename, 'r') as f:
     reader = csv.reader(f)
     for row in reader: res.append(row)
   return res
