@@ -54,11 +54,13 @@ def loadConfig(filename):
 def closeFeedback(driver):
   try:
     driver.find_element_by_class_name("srCloseBtn").click()
-  except:
-    try:
-      driver.find_element_by_class_name("fsrCloseBtn").click()
-    except:
-      pass
+  except: pass
+  try:
+    driver.find_element_by_class_name("fsrCloseBtn").click()
+  except: pass
+  try:
+    driver.find_element_by_class_name("dls-icon-close").click()
+  except: pass
 
 
 def clickOnOffers(driver):
@@ -120,6 +122,10 @@ def twitterLogOut(driver):
     driver.find_element_by_class_name(signOutBtn)).click()
 
 
-
-
+def getBalance(driver):
+  try:
+    e = driver.find_element_by_xpath('//*[contains(text(), "Total Balance")]')
+    return e.find_element_by_xpath('../..').text.split('\n')[1]
+  except:
+    return "Error"
 
