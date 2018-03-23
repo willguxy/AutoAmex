@@ -12,6 +12,9 @@ def get_date(x):
     day_offset = int(re.match(r'expires in (\d+) days', x).group(1))
     d = datetime.today() + timedelta(day_offset)
     return d.strftime('%m/%d/%Y')
+  elif x == 'expired':
+    d = datetime.today() - timedelta(1)
+    return d.strftime('%m/%d/%Y')
   elif x.endswith('today'):
     return datetime.today().strftime('%m/%d/%Y')
   elif x.endswith('tomorrow'):
@@ -40,19 +43,17 @@ def getAddedOffers(cred, browser = "Chrome"):
     time.sleep(1)
     while not driver.find_elements_by_class_name("offer-expires"): time.sleep(1)
     closeFeedback(driver)
-    offer_expires = [o.text.encode('utf-8').lower() 
-      for o in driver.find_elements_by_class_name("offer-expires")]
+    offer_expires = [o.text.lower() for o in driver.find_elements_by_class_name("offer-expires")]
     offer_expires = [get_date(o) for o in offer_expires]
-    offer_info = [offer.text.encode('ascii', errors='ignore').encode('utf-8')
-      for offer in driver.find_elements_by_class_name("offer-info")]
+    offer_info = [o.text.lower() for o in driver.find_elements_by_class_name("offer-info")]
     offer_info = [o.replace(', get', ' and get').replace(',', '') for o in offer_info]
     # filter out things don't start with 'Spend'
     offer_expires = [offer_expires[i] for i in range(len(offer_expires)) 
-      if offer_info[i].startswith('Spend')]
-    offer_info = [o for o in offer_info if o.startswith('Spend')]
+      if offer_info[i].startswith('spend')]
+    offer_info = [o for o in offer_info if o.startswith('spend')]
     offer_info = [o.split('\n') for o in offer_info]
     offer_desc = [o[0] for o in offer_info]
-    offer_info = [','.join([re.findall(r'Spend \$(\d+)', o[0])[0], o[1]]) for o in offer_info]
+    offer_info = [','.join([re.findall(r'spend \$(\d+)', o[0])[0], o[1]]) for o in offer_info]
     offer_key = [','.join(x) for x in zip(offer_expires, offer_info)]
     for k in offer_key:
       if k in offer_map: offer_map[k].append(login_pair[0])
@@ -64,9 +65,9 @@ def getAddedOffers(cred, browser = "Chrome"):
       try: amexLogOut(driver)
       except: pass
   driver.quit()
-  offer_key_desc = {k: ' OR '.join(v) for k, v in offer_key_desc.iteritems()}
+  offer_key_desc = {k: ' OR '.join(v) for k, v in offer_key_desc.items()}
 
-  offer_df = {k: ['+' if x in v else '' for x in username] for k, v in offer_map.iteritems()}
+  offer_df = {k: ['+' if x in v else '' for x in username] for k, v in offer_map.items()}
   offer_df = pd.DataFrame(offer_df)
   cols = offer_df.columns.tolist()
   cols.sort(key=lambda x: (datetime.strptime(x.split(',')[0].strip(), '%m/%d/%Y'), 
