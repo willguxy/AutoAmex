@@ -13,10 +13,9 @@ def genRandomText():
 
 
 def collectOfferNames(driver):
-  tmpoffernames = driver.find_elements_by_xpath("//*[contains(text(), 'Add to Card') \
+  offer_elements = driver.find_elements_by_xpath("//*[contains(text(), 'Add to Card') \
     or contains(text(), 'Save Promo Code')]/../../..")
-  tmpnames = [n.text for n in tmpoffernames if n.text != '']
-  tmpnames = filter(None, tmpnames)
+  tmpnames = [n.text for n in offer_elements if n.text != '']
   tmpnames = [n.split('\n')[1] if '\n' in n else n for n in tmpnames]
   offernames = ', '.join(sorted(tmpnames))
   return offernames
