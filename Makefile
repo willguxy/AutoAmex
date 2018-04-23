@@ -13,5 +13,8 @@ log:
 	@docker logs -f autoamex
 
 clean:
-	@find . -name \*.pyc -delete && \
-	    docker ps -aq -f status=exited | xargs docker rm
+	@find . -type f -name "*.py[co]" -delete -print && \
+	    find . -type d -name "__pycache__" -delete -print
+
+clean-docker:
+	@docker ps -aq -f status=exited | xargs docker rm
