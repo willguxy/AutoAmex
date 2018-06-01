@@ -25,6 +25,7 @@ def loginTest(cred, browser="PhantomJS"):
         continue
       time.sleep(2)
       closeFeedback(driver)
+      time.sleep(1)
       offer_names = collectOfferNames(driver)
       print("Available offers are: {}".format(offer_names))
       if offer_names: clickOnOffers(driver)
