@@ -88,8 +88,8 @@ def amexLogIn(driver, usr, pwd, emailFieldID='lilo_userName', passFieldID='lilo_
 
 
 def amexLogOut(driver):
-  while driver.find_elements_by_xpath('//*[@tabindex="0" and @accesskey="4"]'):
-    try: driver.find_element_by_xpath('//*[@tabindex="0" and @accesskey="4"]').click()
+  while driver.find_element_by_xpath('//*[contains(text(), "Log Out")]'):
+    try: driver.find_element_by_xpath('//*[contains(text(), "Log Out")]').click()
     except: pass
     time.sleep(1)
 
