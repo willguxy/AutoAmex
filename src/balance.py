@@ -16,11 +16,12 @@ def loginTest(cred, browser="PhantomJS"):
     for login_pair in cred:
       try:
         driver.get(amex_url)
+        time.sleep(2)
         amexLogIn(driver, login_pair[0], login_pair[1], 'eliloUserID', 'eliloPassword')
       except:
         print("# {0} ID: {1} Something is wrong with login".format(i, login_pair[0]))
         continue
-      time.sleep(2)
+      time.sleep(5)
       closeFeedback(driver)
       bal = getBalance(driver)
       print("# {0} ID: {1} Balance: {2}".format(i, login_pair[0], bal))

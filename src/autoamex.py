@@ -19,13 +19,14 @@ def loginTest(cred, browser="PhantomJS"):
       i += 1
       try:
         driver.get(amex_url)
+        time.sleep(2)
         amexLogIn(driver, login_pair[0], login_pair[1], 'eliloUserID', 'eliloPassword')
       except:
         print("Something is wrong with login\n")
         continue
-      time.sleep(2)
+      time.sleep(5)
       closeFeedback(driver)
-      time.sleep(1)
+      time.sleep(3)
       offer_names = collectOfferNames(driver)
       print("Available offers are: {}".format(offer_names))
       if offer_names: clickOnOffers(driver)
