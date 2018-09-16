@@ -36,11 +36,12 @@ def getAddedOffers(cred, browser = "Chrome"):
   for login_pair in cred:
     try:
       driver.get(amex_url)
+      time.sleep(3)
       amexLogIn(driver, login_pair[0], login_pair[1], 'eliloUserID', 'eliloPassword')
     except:
       print("login error")
       continue
-    time.sleep(1)
+    time.sleep(5)
     while not driver.find_elements_by_class_name("offer-expires"): time.sleep(1)
     closeFeedback(driver)
     offer_expires = [o.text.lower() for o in driver.find_elements_by_class_name("offer-expires")]
