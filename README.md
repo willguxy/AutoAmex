@@ -14,7 +14,7 @@
 # Running the program
 - Use docker and make, or
 - Run on host machine `python autoamex.py chrome` or `python autoamex.py phantomjs` 
-|( if you have multi cards under one account, and want to process all of them use `python autoamex.py chrome m`)
+> ( if you have multi cards under one account, and want to process all of them use `python autoamex.py chrome m`)
 - Need to install modules for python using `requirements.txt`
 - install `chromedriver` or `phantomjs` depend on how you want to run it (recommend `chrome` for first-time users, so that you can see how it works)
 - Note that `chromedriver` needs to be under `src` and `phantomjs` needs to be under `$PATH`
