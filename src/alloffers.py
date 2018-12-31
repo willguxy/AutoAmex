@@ -42,7 +42,10 @@ def getAddedOffers(cred, browser = "Chrome"):
       print("login error")
       continue
     time.sleep(5)
-    while not driver.find_elements_by_class_name("offer-expires"): time.sleep(1)
+    attempt = 0
+    while not driver.find_elements_by_class_name("offer-expires") and attempt < 5:
+        attempt += 1
+        time.sleep(1)
     closeFeedback(driver)
     offer_expires = [o.text.lower() for o in driver.find_elements_by_class_name("offer-expires")]
     offer_expires = [get_date(o) for o in offer_expires]
