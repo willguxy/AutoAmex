@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from datetime import datetime
 import sys
@@ -12,31 +13,31 @@ website = "https://twitter.com/download?logged_out=1&lang=en"
 
 def skipAddPhoneNumber(driver):
   try:
-    driver.find_element_by_class_name("js-promptDismiss").click()
-    # driver.find_element_by_class_name("modal-btn js-promptDismiss modal-close js-close").click()
+    driver.find_element(By.CLASS_NAME, "js-promptDismiss").click()
+    # driver.find_element(By.CLASS_NAME, "modal-btn js-promptDismiss modal-close js-close").click()
     # document.getElementsByClassName("modal-btn js-promptDismiss modal-close js-close")[0].click()
   except:
     try:
-      driver.find_element_by_class_name("Icon Icon--close Icon--medium").click()
+      driver.find_element(By.CLASS_NAME, "Icon Icon--close Icon--medium").click()
     except:
       pass
 
 
 def clickOnNotifications(driver):
-  driver.find_element_by_class_name("people notifications").click()
+  driver.find_element(By.CLASS_NAME, "people notifications").click()
 
 
 def clickOnBanner(driver):
   try:
-    driver.find_element_by_class_name("EdgeButton EdgeButton--primary js-promptAction").click()
+    driver.find_element(By.CLASS_NAME, "EdgeButton EdgeButton--primary js-promptAction").click()
   except:
     pass
 
 
 def sendTweet(driver, text):
-  driver.find_element_by_id("global-new-tweet-button").click()
+  driver.find_element(By.ID, "global-new-tweet-button").click()
   time.sleep(1)
-  WebDriverWait(driver, 10).until(lambda driver: driver.find_element_by_id("tweet-box-global")).send_keys(text)
+  WebDriverWait(driver, 10).until(lambda driver: driver.find_element(By.ID, "tweet-box-global")).send_keys(text)
   for element in driver.find_elements_by_class_name("tweet-action"):
     try:
       element.click()
@@ -58,7 +59,7 @@ def loginTest(username, password, outputlog = True, tweet = None):
     sys.stdout = logfile
   # input error handle
   if username == [] or password == [] or len(username) != len(password):
-    print "username array does not have the same length as password array..."
+    print("username array does not have the same length as password array...")
     # close log file
     if outputlog:
       sys.stdout = orig_stdout
@@ -70,13 +71,13 @@ def loginTest(username, password, outputlog = True, tweet = None):
   # loop through all username/password combinations
   for idx in range(len(username)):
     driver = getDriver('chrome')
-    print "--------------------------------------------------------------"
-    print "#%s ID:%s" % (idx+1, username[idx])
+    print("--------------------------------------------------------------")
+    print("#%s ID:%s" % (idx+1, username[idx]))
     # just in case network connection is broken 
     try:
       driver.get(website)
     except:
-      print "website is not available..."
+      print("website is not available...")
       # close log file
       if outputlog:
         sys.stdout = orig_stdout
@@ -90,8 +91,8 @@ def loginTest(username, password, outputlog = True, tweet = None):
     try:
       twitterLogIn(driver, username[idx], password[idx])
     except:
-      print "username/password combination is incorrect..."
-      print "--------------------------------------------------------------"
+      print("username/password combination is incorrect...")
+      print("--------------------------------------------------------------")
       continue # end current loop
 
     time.sleep(2)
@@ -102,26 +103,26 @@ def loginTest(username, password, outputlog = True, tweet = None):
     # main program
     status = 'unknown'
     try:
-      driver.find_element_by_id("challenge_response")
+      driver.find_element(By.ID, "challenge_response")
       status = 'challenge'
     except:
       pass
 
     try:
-      driver.find_element_by_id("global-new-tweet-button")
+      driver.find_element(By.ID, "global-new-tweet-button")
       status = 'OK'
     except:
       pass
 
     try:
-      driver.find_element_by_id("account-suspended")
+      driver.find_element(By.ID, "account-suspended")
       status = 'suspended'
     except:
       pass
 
-    print "Status: %s" % status
+    print("Status: %s" % status)
     if status in ('challenge', 'suspended'):
-      print "have to skip this one..."
+      print("have to skip this one...")
       driver.quit() # close browser
       continue
     time.sleep(1)
@@ -131,7 +132,7 @@ def loginTest(username, password, outputlog = True, tweet = None):
         sendTweet(driver, tweet)
         time.sleep(1)
       except:
-        print "can't send tweet"
+        print("can't send tweet")
         pass
     driver.get("https://twitter.com/i/notifications")  # load notification page
     time.sleep(1)
@@ -141,13 +142,13 @@ def loginTest(username, password, outputlog = True, tweet = None):
       try:
         twitterLogOut(driver)
       except:
-        print "Error: Cannot find logout button [%s]" % username[idx]
+        print("Error: Cannot find logout button [%s]" % username[idx])
         time.sleep(10)
         if outputlog:
           sys.stdout = orig_stdout
           logfile.close()
         driver.quit()
-    print "--------------------------------------------------------------"
+    print("--------------------------------------------------------------")
 
     driver.refresh()
     time.sleep(2)
@@ -157,13 +158,13 @@ def loginTest(username, password, outputlog = True, tweet = None):
       pass
 
     driver.quit() # close browser
-  
+
   endtime = time.time()
   # print summary
-  print "--------------------------------------------------------------"
-  print "** Summary **"
-  print "Total time used: %0.2f seconds" % (endtime - begintime)
-  print "--------------------------------------------------------------"
+  print("--------------------------------------------------------------")
+  print("** Summary **")
+  print("Total time used: %0.2f seconds" % (endtime - begintime))
+  print("--------------------------------------------------------------")
 
   # close log file
   if outputlog:

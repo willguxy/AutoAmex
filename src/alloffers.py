@@ -2,6 +2,7 @@
 import sys, time, re, logging
 import pandas as pd
 from datetime import datetime, timedelta
+from selenium.webdriver.common.by import By
 from helper import loadConfig, closeFeedback, amexLogIn, amexLogOut, getDriver
 logger = logging.getLogger(__name__)
 logging.basicConfig()
@@ -66,7 +67,7 @@ def getAddedOffers(cred, browser = "Chrome"):
     for i in range(len(offer_key)):
       if offer_key[i] in offer_key_desc: offer_key_desc[offer_key[i]].update([offer_desc[i]])
       else: offer_key_desc[offer_key[i]] = set([offer_desc[i]])
-    while not driver.find_elements_by_id('eliloUserID'):
+    while not driver.find_element(By.ID, 'eliloUserID'):
       try: amexLogOut(driver)
       except: pass
   driver.quit()

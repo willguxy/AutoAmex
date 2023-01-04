@@ -2,7 +2,7 @@ import csv, time, string
 from random import choice
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-
+from selenium.webdriver.common.by import By
 
 def GenPasswd2(length=8, chars=string.ascii_letters + string.digits):
   return ''.join([choice(chars) for i in range(length)])
@@ -13,7 +13,7 @@ def genRandomText():
 
 
 def collectOfferNames(driver):
-  offer_elements = driver.find_elements_by_xpath("//*[contains(text(), 'Add to Card') \
+  offer_elements = driver.find_elements(By.XPATH, "//*[contains(text(), 'Add to Card') \
     or contains(text(), 'Save Promo Code')]/../../..")
   tmpnames = [n.text.encode('ascii', 'ignore').decode('utf-8', 'ignore') for n in offer_elements if n.text]
   tmpnames = [n.split('\n')[1] if '\n' in n else n for n in tmpnames]
@@ -49,24 +49,26 @@ def loadConfig(filename):
 
 def closeFeedback(driver):
   try:
-    driver.find_element_by_class_name("srCloseBtn").click()
+    driver.find_element(By.CLASS_NAME, "srCloseBtn").click()
   except: pass
   try:
-    driver.find_element_by_class_name("fsrCloseBtn").click()
+    driver.find_element(By.CLASS_NAME, "fsrCloseBtn").click()
   except: pass
   try:
-    driver.find_element_by_class_name("dls-icon-close").click()
+    driver.find_element(By.CLASS_NAME, "dls-icon-close").click()
   except: pass
 
 
 def clickOnOffers(driver):
   for t in range(3):
     if not collectOfferNames(driver): return
-    for e in driver.find_elements_by_xpath('//*[@title="Add to Card"]') + \
-            driver.find_elements_by_xpath('//*[@title="Save Promo Code"]'):
-      try: e.click()
-      except: pass
-      time.sleep(1)
+    for e in driver.find_elements(By.XPATH, '//*[@title="Add to Card"]') + \
+            driver.find_elements(By.XPATH, '//*[@title="Save Promo Code"]'):
+      try:
+        driver.execute_script("arguments[0].click();", e)
+      except Exception as e:
+        pass
+      time.sleep(2)
     if t != 2:
       driver.refresh()
       time.sleep(1)
@@ -74,22 +76,23 @@ def clickOnOffers(driver):
 
 def amexLogIn(driver, usr, pwd, emailFieldID='lilo_userName', passFieldID='lilo_password'):
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_id(emailFieldID)).clear()
+    driver.find_element(By.ID, emailFieldID)).clear()
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_id(emailFieldID)).send_keys(usr)
+    driver.find_element(By.ID, emailFieldID)).send_keys(usr)
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_id(passFieldID)).clear()
+    driver.find_element(By.ID, passFieldID)).clear()
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_id(passFieldID)).send_keys(pwd)
-  for e in driver.find_elements_by_xpath('//*[@type="submit"]'):
-    try: e.click()
-    except: pass
+    driver.find_element(By.ID, passFieldID)).send_keys(pwd)
+  try:
+      driver.find_element(By.ID, 'loginSubmit').click()
+  except:
+      pass
   time.sleep(1)
 
 
 def amexLogOut(driver):
-  while driver.find_element_by_xpath('//*[contains(text(), "Log Out")]'):
-    try: driver.find_element_by_xpath('//*[contains(text(), "Log Out")]').click()
+  while driver.find_element(By.XPATH, '//*[contains(text(), "Log Out")]'):
+    try: driver.find_element(By.XPATH, '//*[contains(text(), "Log Out")]').click()
     except: pass
     time.sleep(1)
 
@@ -100,28 +103,28 @@ def twitterLogIn(driver, usr, pwd):
   emailField = "session[username_or_email]"
   pwdField = "session[password]"
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_id(signInLinkID)).click()
+    driver.find_element(By.ID, signInLinkID)).click()
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_name(emailField)).send_keys(usr)
+    driver.find_element(By.NAME,emailField)).send_keys(usr)
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_name(pwdField)).send_keys(pwd)
+    driver.find_element(By.NAME,pwdField)).send_keys(pwd)
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_class_name(loginBtnClass)).click()
+    driver.find_element(By.CLASS_NAME, loginBtnClass)).click()
 
 
 def twitterLogOut(driver):
   userDropdownID = "user-dropdown-toggle"
   signOutBtn = "js-signout-button"
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_id(userDropdownID)).click()
+    driver.find_element(By.ID, userDropdownID)).click()
   WebDriverWait(driver, 10).until(lambda driver:
-    driver.find_element_by_class_name(signOutBtn)).click()
+    driver.find_element(By.CLASS_NAME, signOutBtn)).click()
 
 
 def getBalance(driver):
   try:
-    e = driver.find_element_by_xpath('//*[contains(text(), "Total Balance")]')
-    return e.find_element_by_xpath('../..').text.split('\n')[1]
+    e = driver.find_element(By.XPATH, '//*[contains(text(), "Total Balance")]')
+    return e.find_element(By.XPATH, '../..').text.split('\n')[1]
   except:
     return "Error"
 

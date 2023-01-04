@@ -12,7 +12,7 @@ def main():
   with open(file_name, 'rb') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',')
     for row in spamreader:
-      print ','.join(row)
+      print(','.join(row))
 
 if __name__ == '__main__':
   main()

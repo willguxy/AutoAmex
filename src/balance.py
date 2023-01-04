@@ -2,6 +2,7 @@
 import sys, time
 from selenium import webdriver
 from datetime import datetime
+from selenium.webdriver.common.by import By
 from helper import loadConfig, closeFeedback, amexLogIn, \
   amexLogOut, getDriver, getBalance
 
@@ -26,7 +27,7 @@ def loginTest(cred, browser="PhantomJS"):
       bal = getBalance(driver)
       print("# {0} ID: {1} Balance: {2}".format(i, login_pair[0], bal))
       i += 1
-      while not driver.find_elements_by_id('eliloUserID'):
+      while not driver.find_element(By.ID, 'eliloUserID'):
         try: amexLogOut(driver)
         except: pass
     driver.quit()

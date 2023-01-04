@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import sys, time
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+
 from datetime import datetime
 from helper import loadConfig, closeFeedback, clickOnOffers, amexLogIn, \
   amexLogOut, getDriver, collectOfferNames
@@ -21,7 +23,8 @@ def loginTest(cred, browser="PhantomJS"):
         driver.get(amex_url)
         time.sleep(2)
         amexLogIn(driver, login_pair[0], login_pair[1], 'eliloUserID', 'eliloPassword')
-      except:
+      except Exception as e:
+        print(e)
         print("Something is wrong with login\n")
         continue
       time.sleep(5)
@@ -30,9 +33,8 @@ def loginTest(cred, browser="PhantomJS"):
       offer_names = collectOfferNames(driver)
       print("Available offers are: {}".format(offer_names))
       if offer_names: clickOnOffers(driver)
-      while not driver.find_elements_by_id('eliloUserID'):
-        try: amexLogOut(driver)
-        except: pass
+      try: amexLogOut(driver)
+      except: pass
       print("Time used: %0.1f seconds\n" % (time.time() - t))
     driver.quit()
     print("** Summary **\nTotal time used: %0.1f seconds" % (time.time() - t0))
