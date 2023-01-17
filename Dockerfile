@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.12-rc
 
 # install phantomjs
 RUN apt-get update \
@@ -15,10 +15,9 @@ RUN cd /tmp \
   && mv phantomjs /usr/local/share \
   && chmod 755 /usr/local/share/phantomjs/bin/phantomjs \
   && ln -sf /usr/local/share/phantomjs/bin/phantomjs /usr/local/bin
+RUN apt-get -y install python3-pip
 
 # update pip and install python packages
-RUN pip install pip -U --no-cache \
-  && pip list --outdated | awk '{print $1}' | xargs pip install -U --no-cache
 ADD requirements.txt /tmp/
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
