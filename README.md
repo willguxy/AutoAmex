@@ -1,48 +1,59 @@
-# Docker
-- Now auto_amex has a `Dockerfile`. Suppose you have docker set up on your machine
-- You can use `make build` to build a docker image
-- Use `make run` to run the process with phantomjs
+# AutoAmex
 
-# Chromedriver
-- `chromedriver` has been removed form this repo
-- If you need to use legacy mode, please download your own chromedriver and put it under `src`
+AutoAmex is a Python-based automation tool for interacting with the American Express website to add all available offers across all cards to your account.
 
-# Add your configuration
-- Add your own config file under the `conf` folder. Name it as `config.csv`
-- The `config.csv` should follow `your_login,your_password` each line. Add however many lines as you want. you don't headers for the csv.
+## Requirements
 
-# Running the program
-- Use docker and make, or
-- Run on host machine `python autoamex.py chrome` or `python autoamex.py phantomjs`
-- Need to install modules for python using `requirements.txt`
-- install `chromedriver` or `phantomjs` depend on how you want to run it (recommend `chrome` for first-time users, so that you can see how it works)
-- Note that `chromedriver` needs to be under `src` and `phantomjs` needs to be under `$PATH`
+The required Python packages are listed in `requirements.txt`. You can install them using pip:
+```
+bash
+pip install -r requirements.txt
+```
 
-# Important Note
-- one card per each online account
-- this program doesn't work with multiple cards under the same account
-- nor does it use multi-tab tricks (it's not robust and only causes more surprises)
+## Main Functionality
 
-# Docker for Windows users (probably incomplete since I never ran docker on Windows)
-- Check there installation guide for Windows 10 at https://docs.docker.com/docker-for-windows/
-- If you are using older versions, please use Docker Toolbox https://docs.docker.com/toolbox/overview/
-- It would install both Git and VirtualBox to your computer as well
-- Start Docker and make sure it's running on your machine (should be able see the whale icon on lower right corner)
-- You should be able to see a terminal popped up (MINGW64). This would be Linux-like instead of `cmd.exe` looking.
-- Your host disk is automatically mounted. This means any changes will be reflected on both sides.
-- The starting directory is *your personal folder* on Windows
-- Find your downloaded `AutoAmex` repo. You can use Git or just download and unzip it
-- Remember to create your own `config.csv` file before proceeding
-- Go to the repo folder and run `./docker-start.sh`
-- Setting jobs on Windows is left out for now. You would need to do your own research to find out how it's done with Docker on Windows
+The main script is `autoamex.py`. It uses the following functions:
 
-# AutoTwitter (probably not working properly)
-- OffersBot has stopped updating their twitter account. You'd now need to parse the RSS feed from their website
-- I haven't found any free RSS-to-Twiter tools online. TwitterFeed used to be the one, but it's gone now
-- Alternative to the approach provided here, you can pay some fee and use other services, or build your own cloud machine that does this job
-- Here `parseOffersBotRss.py` lets you get the lastest hashtags and store locally in a file called `hashtags.txt`. `AutoTwitter.py` is the other part which finds this text file in the same folder, and run some Selenium job to publish these hashtags. I added some arbitrary non-sense in front just in case this behavior triggers Twitter spam detector
-- `AutoTwitter.py` is also self-contained in that you can pass command line argument to it, and it will pusblish whatever you pass in
-- Everything else stays the same. I haven't tested the balace checker so this one might not work very well now.
+- `main(argv)`: This function is the entry point of the script. It accepts command line arguments to specify the browser to use (default is "Chrome").
 
-# Other stuff (not working either)
-- AutoAmexAllOffers: retrieves all added offers across all accounts and lay them down in a csv file
+- `amex_login_and_collect_offers(credentials, browser)`: This function logs into the American Express website using the provided credentials and browser. It logs various information, such as available offers and time taken for each operation.
+
+## Configuration File
+
+The configuration file should be a CSV file located in the `conf/` directory. It should contain your username and password for the American Express website, separated by a comma. Here's an example of what the file might look like:
+
+```
+username,password
+```
+Replace `username` and `password` with your actual username and password.
+
+## Helper Functions
+
+The `helper.py` script contains several helper functions:
+
+- `load_config(filename)`: Reads a CSV file and returns a list of lists.
+
+- `get_driver(browser)`: Returns a WebDriver instance for the specified browser.
+
+- `amex_log_in(driver, usr, pwd, email_field_id='lilo_userName', pass_field_id='lilo_password')`: Logs into the American Express website.
+
+- `amex_log_out(driver)`: Logs out of the American Express website.
+
+- `click_on_offers(driver)`: Clicks on available offers on the American Express website.
+
+- `collect_offer_names(driver)`: Collects the names of available offers.
+
+## Running the Script
+
+You can run the script from the command line as follows:
+```
+bash
+python src/autoamex.py [browser]
+```
+
+Replace `[browser]` with the name of the browser you want to use (e.g., "Chrome", "Firefox"). If no browser is specified, "Chrome" is used by default.
+
+## .gitignore
+
+The `.gitignore` file is set to ignore certain file types, including `.pyc`, `.swp`, `.csv`, `.log`, `.json`, `.xlsx`, and `chromedriver*`
+

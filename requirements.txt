@@ -1,5 +1,2 @@
-feedparser==6.0.10
-pandas==1.5.2
-python_dateutil==2.8.2
-selenium==4.7.2
-tweepy==4.12.1
+selenium==4.15.2
+undetected_chromedriver==3.1.7
