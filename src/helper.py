@@ -3,6 +3,8 @@ from random import choice
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from undetected_chromedriver import Chrome, ChromeOptions
 
 def GenPasswd2(length=8, chars=string.ascii_letters + string.digits):
   return ''.join([choice(chars) for i in range(length)])
@@ -22,20 +24,28 @@ def collectOfferNames(driver):
 
 
 def getDriver(browser):
-  chrome_options = webdriver.ChromeOptions()
-  chrome_options.add_argument("--incognito")
-  chrome_options.add_argument("--window-size=1440,900")
+  options = ChromeOptions()
+  options.add_argument("--incognito")
+  options.add_argument("--window-size=1440,900")
   if browser.lower() == 'firefox':
     driver = webdriver.Firefox()
   elif browser.lower() == 'chrome':
-    driver = webdriver.Chrome('./chromedriver', chrome_options=chrome_options)
+    try:
+      driver = Chrome(options=options)
+    except urllib.error.URLError as e:
+      if "[SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1006)" in str(e):
+        print("Error: Unsafe legacy renegotiation disabled. Please update your SSL settings.")
+        return None
+    except Exception as e:
+      print("Error: An unexpected error occurred while initializing the Chrome driver.")
+      return None
   elif browser.lower() == 'chrome_linux':
-    driver = webdriver.Chrome('./chromedriver_linux64', chrome_options=chrome_options)
+    driver = Chrome(options=options)
   elif browser.lower() in ('phantomjs', 'headless'):
-    driver = webdriver.PhantomJS()
+    driver = Chrome(options=options)
   else:
-    print("WARNING: browser selection not valid, use PhantomJS as default")
-    driver = webdriver.PhantomJS()
+    print("WARNING: browser selection not valid, use Chrome as default")
+    driver = Chrome(options=options)
   return driver
 
 
@@ -59,7 +69,7 @@ def closeFeedback(driver):
   except: pass
 
 
-def clickOnOffers(driver):
+def clickOnOffersOnPage(driver):
   for t in range(3):
     if not collectOfferNames(driver): return
     for e in driver.find_elements(By.XPATH, '//*[@title="Add to Card"]') + \
@@ -83,11 +93,17 @@ def amexLogIn(driver, usr, pwd, emailFieldID='lilo_userName', passFieldID='lilo_
     driver.find_element(By.ID, passFieldID)).clear()
   WebDriverWait(driver, 10).until(lambda driver:
     driver.find_element(By.ID, passFieldID)).send_keys(pwd)
-  try:
-      driver.find_element(By.ID, 'loginSubmit').click()
-  except:
-      pass
-  time.sleep(1)
+  for i in range(5):
+    try:
+      login_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'loginSubmit')))
+      login_button.click()
+      break
+    except:
+      if i < 4:  # if it's not the last attempt
+        time.sleep(5)  # wait for 2 seconds before next attempt
+      else:
+        pass  # if all attempts failed, pass the exception
+  time.sleep(10)
 
 
 def amexLogOut(driver):
@@ -127,4 +143,42 @@ def getBalance(driver):
     return e.find_element(By.XPATH, '../..').text.split('\n')[1]
   except:
     return "Error"
+
+def clickOnOffers(driver):
+    clickThroughCards(driver)
+
+def clickThroughCards(driver):
+    # Create a list to store the names of the visited cards
+    visited_cards = []
+
+    # Click each card button
+    while True:
+        # Refresh the buttons before clicking them
+        # Wait and click the card switcher toggle button
+        switcher_toggle_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".flex.btn.axp-account-switcher__accountSwitcher__togglerButton___1H_zk.account-switcher-toggler.css-15ld01r"))
+        )
+        switcher_toggle_button.click()
+        # Wait for the card list to be visible
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, "switcher_product_rows"))
+        )
+        all_card_buttons = driver.find_elements(By.CSS_SELECTOR, "#switcher_product_rows button")
+        card_buttons = [button for button in all_card_buttons if 'ending in' in button.accessible_name and button.accessible_name not in visited_cards]
+
+        # If there are no more cards to visit, break the loop
+        if not card_buttons:
+            break
+
+        # Click the first unvisited card
+        button = card_buttons[0]
+        # Add the card to the visited cards list
+        visited_cards.append(button.accessible_name)
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable(button))
+        button.click()
+        time.sleep(1)  # Adding a delay to allow for any page transitions
+        # click the offers on this page
+        clickOnOffersOnPage(driver)
+
+
 
