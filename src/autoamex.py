@@ -9,15 +9,15 @@ from helper import (
     click_on_offers,
     amex_log_in,
     amex_log_out,
-    get_driver,
-    collect_offer_names,
+    get_driver
 )
 
 AMEX_URL = "https://global.americanexpress.com/offers/eligible"
 
 
 def amex_login_and_collect_offers(credentials, browser):
-    log_file_name = datetime.strftime(datetime.now(), "%Y-%m-%d %H_%M_%S") + ".log"
+    log_file_name = datetime.strftime(
+        datetime.now(), "%Y-%m-%d %H_%M_%S") + ".log"
     logging.basicConfig(filename="../tmp/" + log_file_name, level=logging.INFO)
 
     driver = get_driver(browser)
@@ -56,12 +56,14 @@ def amex_login_and_collect_offers(credentials, browser):
 
     driver.quit()
 
-    logging.info("** Summary **\nTotal time used: %0.1f seconds" % (time.time() - t0))
+    logging.info("** Summary **\nTotal time used: %0.1f seconds" %
+                 (time.time() - t0))
 
 
 def main(argv):
     browser = argv[0] if len(argv) >= 1 else "Chrome"
-    amex_login_and_collect_offers(load_config("../conf/config.csv"), browser=browser)
+    amex_login_and_collect_offers(load_config(
+        "../conf/config.csv"), browser=browser)
 
 
 if __name__ == "__main__":
