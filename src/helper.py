@@ -1,6 +1,5 @@
 import csv
 import time
-import string
 import sys
 from random import choice
 from selenium import webdriver
@@ -8,12 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from undetected_chromedriver import Chrome, ChromeOptions
-
-def generate_password(length=8, chars=string.ascii_letters + string.digits):
-  return ''.join([choice(chars) for _ in range(length)])
-
-def generate_random_text():
-  return generate_password(8, string.digits) + generate_password(15, string.ascii_letters)
+import logging
 
 def collect_offer_names(driver):
   offer_elements = driver.find_elements(By.XPATH, "//*[contains(text(), 'Add to Card') \
@@ -33,14 +27,14 @@ def get_driver(browser):
     try:
       driver = Chrome(options=options)
     except Exception as e:
-      print("Error: An unexpected error occurred while initializing the Chrome driver.")
+      logging.error("Error: An unexpected error occurred while initializing the Chrome driver.")
       sys.exit(1)
   elif browser.lower() == 'chrome_linux':
     driver = Chrome(options=options)
   elif browser.lower() in ('phantomjs', 'headless'):
     driver = Chrome(options=options)
   else:
-    print("WARNING: browser selection not valid, use Chrome as default")
+    logging.warning("WARNING: browser selection not valid, use Chrome as default")
     driver = Chrome(options=options)
   return driver
 
@@ -58,6 +52,13 @@ def close_feedback(driver):
       pass
 
 def click_on_offers_on_page(driver):
+  # Get the offers from the page
+  offers = collect_offer_names(driver)
+  # Log the offers on this page
+  if offers:
+    logging.info("Offers on this page: %s." % offers.split('account ending')[0])
+  else:
+    logging.info("No offers on this page.")
   for _ in range(3):
     if not collect_offer_names(driver): return
     for e in driver.find_elements(By.XPATH, '//*[@title="Add to Card"]') + \
@@ -79,35 +80,21 @@ def amex_log_in(driver, usr, pwd, email_field_id='lilo_userName', pass_field_id=
     driver.find_element(By.ID, pass_field_id)).clear()
   WebDriverWait(driver, 10).until(lambda driver:
     driver.find_element(By.ID, pass_field_id)).send_keys(pwd)
-  for i in range(5):
-    try:
-      login_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'loginSubmit')))
-      login_button.click()
-      break
-    except:
-      if i < 4:  # if it's not the last attempt
-        time.sleep(5)  # wait for 2 seconds before next attempt
-      else:
-        pass  # if all attempts failed, pass the exception
-  time.sleep(10)
+  try:
+    login_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'loginSubmit')))
+    login_button.click()
+  except:
+    logging.error("ERROR: Unable to log in")
+    sys.exit(1)
 
 def amex_log_out(driver):
   while driver.find_element(By.XPATH, '//*[contains(text(), "Log Out")]'):
     try: driver.find_element(By.XPATH, '//*[contains(text(), "Log Out")]').click()
     except: pass
     time.sleep(1)
-
-def get_balance(driver):
-  try:
-    e = driver.find_element(By.XPATH, '//*[contains(text(), "Total Balance")]')
-    return e.find_element(By.XPATH, '../..').text.split('\n')[1]
-  except:
-    return "Error"
+  logging.info("Logged out.")
 
 def click_on_offers(driver):
-    click_through_cards(driver)
-
-def click_through_cards(driver):
     visited_cards = []
     while True:
         switcher_toggle_button = WebDriverWait(driver, 10).until(
@@ -122,6 +109,7 @@ def click_through_cards(driver):
         if not card_buttons:
             break
         button = card_buttons[0]
+        logging.info("Clicking on card: %s" % button.accessible_name.split(' account')[0])
         visited_cards.append(button.accessible_name)
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable(button))
         button.click()

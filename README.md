@@ -2,6 +2,10 @@
 
 AutoAmex is a Python-based automation tool for interacting with the American Express website to add all available offers across all cards to your account.
 
+## Functional as of November 29, 2023.
+Please open an issue if you encounter any problems.
+
+
 ## Requirements
 
 The required Python packages are listed in `requirements.txt`. You can install them using pip:
